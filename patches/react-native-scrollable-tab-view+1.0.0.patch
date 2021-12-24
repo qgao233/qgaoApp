@@ -1,0 +1,75 @@
+diff --git a/node_modules/react-native-scrollable-tab-view/index.js b/node_modules/react-native-scrollable-tab-view/index.js
+index 82e53c5..8f7a5f8 100644
+--- a/node_modules/react-native-scrollable-tab-view/index.js
++++ b/node_modules/react-native-scrollable-tab-view/index.js
+@@ -25,7 +25,24 @@ const AnimatedViewPagerAndroid = Platform.OS === 'android' ?
+   Animated.createAnimatedComponent(ViewPager) :
+   undefined;
+ 
++let touchPhase = 0;
++
+ const ScrollableTabView = createReactClass({
++  //自定义开始
++  _onPageScrollStateChanged(){
++    if(touchPhase==2){
++      touchPhase = 0;
++    }else{
++      touchPhase += 1;
++    }
++
++  },
++  _initialTouchPhase(){
++    //不初始化的话，会导致从其它标签页切换到这个嵌套的标签页时，会有个bug，
++    //这实际上是个bug补丁，但是偶尔还是会有滑动屏幕不起作用的时候╮(╯_╰)╭
++    touchPhase = 2;
++  },
++  //自定义结束
+   mixins: [TimerMixin, ],
+   statics: {
+     DefaultTabBar,
+@@ -137,14 +154,14 @@ const ScrollableTabView = createReactClass({
+     if (Platform.OS === 'ios') {
+       const offset = pageNumber * this.state.containerWidth;
+       if (this.scrollView) {
+-        this.scrollView.getNode().scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
++        this.scrollView.scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
+       }
+     } else {
+       if (this.scrollView) {
+         if (this.props.scrollWithoutAnimation) {
+-          this.scrollView.getNode().setPageWithoutAnimation(pageNumber);
++          this.scrollView.setPageWithoutAnimation(pageNumber);
+         } else {
+-          this.scrollView.getNode().setPage(pageNumber);
++          this.scrollView.setPage(pageNumber);
+         }
+       }
+     }
+@@ -255,6 +272,9 @@ const ScrollableTabView = createReactClass({
+         style={styles.scrollableContentAndroid}
+         initialPage={this.props.initialPage}
+         onPageSelected={this._updateSelectedPage}
++        //新增开始
++        onPageScrollStateChanged = {this._onPageScrollStateChanged}
++        //新增结束
+         keyboardDismissMode="on-drag"
+         scrollEnabled={!this.props.locked}
+         onPageScroll={Animated.event(
+@@ -330,6 +350,12 @@ const ScrollableTabView = createReactClass({
+     } else {
+       const { position, offset, } = e.nativeEvent;
+       this.props.onScroll(position + offset);
++      //自定义开始，touchPhase=1时为真正的手指触摸屏幕的时间段
++      if(touchPhase==1){
++        this.props.onScrollExtra && this.props.onScrollExtra(offset,this.state.offsetAndroidLast);
++        this.setState({offsetAndroidLast:offset});
++      }
++      //自定义结束
+     }
+   },
+ 
+@@ -411,3 +437,4 @@ const styles = StyleSheet.create({
+     flex: 1,
+   },
+ });
++

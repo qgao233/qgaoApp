@@ -1,0 +1,16 @@
+const listResult = {
+    "code": 1,
+    "msg": "数据列表",
+    "page": 1,
+    "pagecount": 0,
+    "limit": "20",
+    "total": 0,
+    "list": [],
+    "class": [{
+        "type_id": 20,
+        "type_name": "电影"
+    }, {
+        "type_id": 21,
+        "type_name": "动作片"
+    },]
+}
