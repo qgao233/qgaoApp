@@ -5,10 +5,12 @@ import VideoPlayer from "../../../../../../utils/components/videoPlayer"
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Introduction from './introduction';
 import Comment from './comment';
-
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
 
 function TabBar(props) {
     const { goToPage, tabs, activeTab } = props;
+    const {topicTrends,topicTrendsNum} = props;
 
     return (
         <View style={{ backgroundColor:"#fff",flexDirection: "row", height: 40, justifyContent: "space-evenly",borderBottomWidth:0.25,borderBottomColor:"#ccc" }}>
@@ -22,7 +24,7 @@ function TabBar(props) {
                             justifyContent: "center",
                             paddingLeft: 10,
                             paddingRight: 10,
-                            borderBottomColor: topicTrends[topicTrendsNum].color.color_num,
+                            borderBottomColor: topicTrends[topicTrendsNum].style_desc.gradient_start,
                             borderBottomWidth: activeTab === i ? 2 : 0
                         }}
                     ><Text style={{ color: activeTab === i ? "#000" : "#ccc", fontSize: activeTab === i ? 18 : 15 }} >{v}</Text>
@@ -69,9 +71,9 @@ class Index extends React.Component {
                     onChangeTab={obj => {
                         this.setState({ currIndex: obj.i })
                     }}
-                    renderTabBar={() => < TabBar />}
+                    renderTabBar={() => < TabBar {...this.props} />}
                 >
-                    <Introduction tabLabel='简介' navigation={this.props.navigation} />
+                    <Introduction tabLabel='简介' navigation={this.props.navigation}  />
                     <Comment tabLabel='评论'></Comment>
                 </ScrollableTabView>
 
@@ -79,5 +81,21 @@ class Index extends React.Component {
         );
     }
 
-}
-export default Index;
+}//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state=>state.topicTrends],
+    topicTrends=>topicTrends
+  )
+  const getTopicTrendsNum = createSelector(
+    [state=>state.topicTrendsNum],
+    topicTrendsNum=>topicTrendsNum.value
+  )
+  const mapStateToProps = (state)=>{
+    return {
+        topicTrends:getTopicTrends(state),
+        topicTrendsNum:getTopicTrendsNum(state),
+    }
+  }
+  
+  
+  export default connect(mapStateToProps,null)(Index);

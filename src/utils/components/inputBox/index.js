@@ -12,17 +12,21 @@ class Index extends React.Component {
     static defaultProps = {
         inputWidth: 400,
         inputHeight: 100,
-        inputBorderColor:"transparent",
+        inputBorderColor: "transparent",
         inputFontColor: "#5a5a5a",//输入的字体颜色
         inputTopicColor: "#3c8cd2",
         inputColorOpacity: "22", //2位十六进制数
         inputIconName: "search",
-        inputFontSize: 30,
+        inputFontSize: 16,
         inputPlaceholder: "Search",
+        inputIconFontSize: 25,
+        inputPlaceholderBackgroundColor:"#f6f7f9",
         inputMultiline: false,
-        inputButtonText:"Search",
-        inputShowFontColor:"#fff",
-        onPressSubmit:()=>{}
+        inputButtonText: "Search",
+        inputShowFontColor: "#CFD6DB",
+        inputShowIconColor: "#E5E8EA",
+        onPressSubmit: () => { },
+        isInputButtonShow: true,
     }
 
     constructor() {
@@ -52,7 +56,7 @@ class Index extends React.Component {
                 toValue: 0,
                 duration: 500,
                 easing: Easing.linear,
-                useNativeDriver: false,//消除警告，但这里不能设置为true
+                useNativeDriver: false,//消除警告，但这里不能设置为true,true时有些属性不支持
             }),
             Animated.timing(this.state.barWidth, {
                 toValue: 1,
@@ -183,10 +187,12 @@ class Index extends React.Component {
     }
 
     render() {
-        const { inputWidth, inputHeight,inputBorderColor,
-            inputFontColor,inputTopicColor,inputColorOpacity,
-            inputIconName,inputFontSize,inputPlaceholder,
-            inputMultiline,inputButtonText,inputShowFontColor } = this.props;
+        const { inputWidth, inputHeight, inputBorderColor,
+            inputFontColor, inputTopicColor, inputColorOpacity,
+            inputIconName, inputFontSize, inputPlaceholder,
+            inputMultiline, inputButtonText, inputShowFontColor,
+            isInputButtonShow,inputPlaceholderBackgroundColor,inputShowIconColor,
+            inputIconFontSize } = this.props;
 
 
         const { backOpacity, barOpacity, inputOpacity, buttonOpacity } = this.state;
@@ -224,8 +230,8 @@ class Index extends React.Component {
                     style={{
                         ...style.defaultContainer,
                         borderColor: inputBorderColor,
-                        width:inputWidth,
-                        height:inputHeight,
+                        width: inputWidth,
+                        height: inputHeight,
                         borderRadius: inputWidth > inputHeight ? inputWidth / 10 : inputHeight / 10,
                     }}
                     onPress={this.openInput} >
@@ -234,12 +240,12 @@ class Index extends React.Component {
                         opacity: backOpacity,
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: inputTopicColor+inputColorOpacity,
+                        backgroundColor: inputPlaceholderBackgroundColor ,
                     }}>
                         <FontAwesomeIcon
                             name={inputIconName}
-                            size={inputFontSize}
-                            color={inputShowFontColor}
+                            size={inputIconFontSize}
+                            color={inputShowIconColor}
                             style={{ paddingLeft: inputWidth > inputHeight ? inputWidth / 20 : inputHeight / 20 }} />
                         <Text style={{
                             color: inputShowFontColor,
@@ -259,17 +265,19 @@ class Index extends React.Component {
                         top: barTop,
                         opacity: barOpacity
                     }}></Animated.View>
-                    <AnimatedTextInput class="input" style={{
-                        ...style.defaultInput,
-                        zIndex: inputZindex,
-                        opacity: inputOpacity,
-                        borderBottomWidth: 1,
-                        borderBottomColor: inputTopicColor+inputColorOpacity,
-                        color: inputFontColor,
-                        fontSize: inputFontSize,
-                        paddingLeft: inputWidth > inputHeight ? inputWidth / 20 : inputHeight / 20,
-                        paddingRight: inputWidth > inputHeight ? inputWidth / 4.5 : inputHeight / 4.5
-                    }}
+                    <AnimatedTextInput class="input"
+                        style={{
+                            ...style.defaultInput,
+                            zIndex: inputZindex,
+                            opacity: inputOpacity,
+                            borderBottomWidth: 1,
+                            borderBottomColor: inputTopicColor + inputColorOpacity,
+                            color: inputFontColor,
+                            fontSize: inputFontSize,
+                            paddingLeft: inputWidth > inputHeight ? inputWidth / 20 : inputHeight / 20,
+                            paddingRight: inputWidth > inputHeight ? inputWidth / 4.5 : inputHeight / 4.5
+                        }}
+                        onSubmitEditing={() => { this.props.onPressSubmit(this.state.textValue) }}
                         onChangeText={(value) => this.setState({ textValue: value })}
                         value={this.state.textValue}
                         onBlur={this.closeInput}
@@ -278,36 +286,39 @@ class Index extends React.Component {
                         multiline={inputMultiline}
                         ref={(ref) => this.inputRef = ref}
                     />
-                    <Animated.View style={{
-                        position: "absolute",
-                        right: 0,
-                        width: inputWidth > inputHeight ? inputWidth / 4 : inputHeight / 4,
-                        height: "100%",
-                        alignItems: "flex-end",
-                        justifyContent: "center",
-                        opacity: buttonOpacity,
-                        zIndex: buttonZindex,
-                    }}>
-                        {/* button */}
-                        <TouchableOpacity 
-                        onPress={()=>{this.props.onPressSubmit(this.state.textValue)}}
-                        activeOpacity={0.6}
-                        style={{
-                            paddingTop: inputHeight * 0.2,
-                            paddingBottom: inputHeight * 0.2,
-                            paddingLeft: inputWidth > inputHeight ? inputWidth / 25 : inputHeight / 25,
-                            paddingRight: inputWidth > inputHeight ? inputWidth / 25 : inputHeight / 25,
-                            alignItems: "center",
+                    {isInputButtonShow
+                        ? <Animated.View style={{
+                            position: "absolute",
+                            right: 0,
+                            width: inputWidth > inputHeight ? inputWidth / 4 : inputHeight / 4,
+                            height: "100%",
+                            alignItems: "flex-end",
                             justifyContent: "center",
-                            backgroundColor: inputTopicColor,
-                            borderRadius: inputWidth > inputHeight ? inputWidth / 10 : inputHeight / 10,
-                        }}
-                        >
-                            <Text style={{ color: inputShowFontColor, fontSize: inputFontSize ? inputFontSize / 1.5 : 10, }}>
-                                {inputButtonText}
-                            </Text>
-                        </TouchableOpacity>
-                    </Animated.View>
+                            opacity: buttonOpacity,
+                            zIndex: buttonZindex,
+                        }}>
+                            {/* button */}
+                            <TouchableOpacity
+                                onPress={() => { this.props.onPressSubmit(this.state.textValue) }}
+                                activeOpacity={0.6}
+                                style={{
+                                    paddingTop: inputHeight * 0.2,
+                                    paddingBottom: inputHeight * 0.2,
+                                    paddingLeft: inputWidth > inputHeight ? inputWidth / 25 : inputHeight / 25,
+                                    paddingRight: inputWidth > inputHeight ? inputWidth / 25 : inputHeight / 25,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    backgroundColor: inputTopicColor,
+                                    borderRadius: inputWidth > inputHeight ? inputWidth / 10 : inputHeight / 10,
+                                }}
+                            >
+                                <Text style={{ color: "#fff", fontSize: inputFontSize ? inputFontSize / 1.5 : 10, }}>
+                                    {inputButtonText}
+                                </Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                        : <></>}
+
 
                 </TouchableOpacity>
             </>

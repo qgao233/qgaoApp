@@ -647,7 +647,7 @@ class Index extends React.Component {
 
     }
 
-    renderInitLoadIndicator() {
+    renderInitLoadIndicator= ()=> {
         return (
             <View style={styles.container}>
                 <ActivityIndicator animating={true}

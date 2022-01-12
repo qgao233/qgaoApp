@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StatusBar, PanResponder, Animated, Easing,TouchableOpacity } from 'react-native';
-import SearchFrame from '../components/searchFrame'
+import SearchFrame from '../utils/components/searchFrame'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import MainTabBar from './components/mainTabBar';
@@ -14,11 +14,8 @@ class Index extends React.Component {
 
     constructor() {
         super();
-        this.classficationRef = React.createRef();
-        this.rankRef = React.createRef();
 
         this.state = {
-            isScrollableTabViewLocked: false,//是否锁住主tab的左右滑动，只允许次级tab的左右滑动
 
             translateY: new Animated.Value(1),//0,
             scale: new Animated.Value(1),//1,
@@ -51,9 +48,6 @@ class Index extends React.Component {
         ]).start();
     }
 
-    toggleScrollableTabViewLock = (bool = false) => {
-        this.setState({ isScrollableTabViewLocked: bool });
-    }
 
     render() {
 
@@ -91,20 +85,11 @@ class Index extends React.Component {
                 {/* tab标签栏,外层一定是弹性容器（flex:1)才会显示 */}
                 <ScrollableTabView
                     initialPage={0}
-                    onChangeTab={obj => {
-                        this.setState({ currIndex: obj.i, isScrollableTabViewLocked: false })
-                        if (obj.i == 1) {
-                            this.classficationRef.initialWithinCurrTab();
-                        } else if (obj.i == 2) {
-                            this.rankRef.initialWithinCurrTab();
-                        }
-                    }}
-                    locked={this.state.isScrollableTabViewLocked}
                     renderTabBar={() => < MainTabBar />}
                 >
                     <Latest tabLabel='最新' showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation} />
-                    <Classfication showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation} locked={this.state.isScrollableTabViewLocked} ref={ref => this.classficationRef = ref} toggleScrollableTabViewLock={this.toggleScrollableTabViewLock} tabLabel='分类' />
-                    <Rank showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation} locked={this.state.isScrollableTabViewLocked} ref={ref => this.rankRef = ref} toggleScrollableTabViewLock={this.toggleScrollableTabViewLock} tabLabel='排行榜' />
+                    <Classfication showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation}  tabLabel='分类' />
+                    <Rank showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation}  tabLabel='排行榜' />
                 </ScrollableTabView>
                 {/* reply模态框 */}
                 <Modalbox
@@ -123,7 +108,6 @@ class Index extends React.Component {
                 // style={{ position: "relative" }}
 
                 >
-                    {/* 1层，显示回复个数 */}
                     <View style={{
                         paddingTop: 5, paddingBottom: 5, borderBottomWidth: 8, borderBottomColor: "#eeee",
                         flexDirection: "row", justifyContent: "center", alignItems: "center"

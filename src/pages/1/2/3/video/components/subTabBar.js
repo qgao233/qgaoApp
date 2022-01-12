@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import {topicTrends,topicTrendsNum} from '../../../../../../utils/stylesKits'
-
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
 class Index extends React.Component {
     render() {
         // goToPage 函数 负责跳转页面
         // tabs 标题数组 
         // activeTab 当前激活选中的索引
         const { goToPage, tabs, activeTab } = this.props;
+        const {topicTrends,topicTrendsNum} = this.props;
 
         return (
             <View style={{ flexDirection: "row", height: 30 }}>
@@ -28,7 +29,7 @@ class Index extends React.Component {
                                 paddingRight: 10,
                             }}
                         >
-                            <Text style={{ color: activeTab === i ? topicTrends[topicTrendsNum].color.color_num : "#ccc", fontSize: activeTab === i ? 15 : 12 }} >{v}</Text>
+                            <Text style={{ color: activeTab === i ? topicTrends[topicTrendsNum].style_desc.gradient_start : "#ccc", fontSize: activeTab === i ? 15 : 12 }} >{v}</Text>
                         </TouchableOpacity>
                     )}
 
@@ -38,8 +39,24 @@ class Index extends React.Component {
         );
     }
 }
-export default Index;
-
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state=>state.topicTrends],
+    topicTrends=>topicTrends
+  )
+  const getTopicTrendsNum = createSelector(
+    [state=>state.topicTrendsNum],
+    topicTrendsNum=>topicTrendsNum.value
+  )
+  const mapStateToProps = (state)=>{
+    return {
+        topicTrends:getTopicTrends(state),
+        topicTrendsNum:getTopicTrendsNum(state),
+    }
+  }
+  
+  
+  export default connect(mapStateToProps,null)(Index);
 const styles = StyleSheet.create({
     titleViewStyle: {
         flexDirection: "row",

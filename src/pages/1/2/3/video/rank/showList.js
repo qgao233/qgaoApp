@@ -11,6 +11,8 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import Popover, { Rect } from 'react-native-popover-view';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
 
 const spinnerTextArray = ["关注", "私聊", "拉黑", "举报"];
 
@@ -79,7 +81,7 @@ class Index extends React.Component {
             </View>
           </View>
           <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-            {/* <TouchableOpacity style={{ marginRight: 10, padding: 5, paddingLeft: 10, paddingRight: 10, backgroundColor: topicTrends[topicTrendsNum].color.color_num, borderRadius: 5 }}>
+            {/* <TouchableOpacity style={{ marginRight: 10, padding: 5, paddingLeft: 10, paddingRight: 10, backgroundColor: topicTrends[topicTrendsNum].style_desc.gradient_start, borderRadius: 5 }}>
                             <Text style={{ color: "#fff" }}>关注</Text>
                         </TouchableOpacity> */}
             <TouchableOpacity ref={(ref) => {
@@ -301,11 +303,13 @@ class Index extends React.Component {
 
   _renderFooter = () => {
     let { hasMorePage, page } = this.state;
+    const {topicTrends,topicTrendsNum} = this.props;
+
     if (hasMorePage && page >= 2) {
       return (
         <View style={{ flexDirection: 'row', height: 30, alignItems: 'center', justifyContent: 'center', }}>
           <ActivityIndicator animating={true}
-            color={topicTrends[topicTrendsNum].color.color_num}
+            color={topicTrends[topicTrendsNum].style_desc.gradient_start}
           />
           <Text style={{ color: '#999999', fontSize: 14, }}>
             正在加载更多数据...
@@ -333,6 +337,7 @@ class Index extends React.Component {
   }
   renderFlatList = () => {
     const { isRefresh } = this.state;
+    const {topicTrends,topicTrendsNum} = this.props;
 
     return (
       <>
@@ -345,7 +350,7 @@ class Index extends React.Component {
             <RefreshControl
               refreshing={isRefresh}
               onRefresh={this._onRefresh}//上拉刷新
-              colors={[topicTrends[topicTrendsNum].color.color_num, "#ec1a0a", "#ffc051"]}
+              colors={[topicTrends[topicTrendsNum].style_desc.gradient_start, "#ec1a0a", "#ffc051"]}
               progressBackgroundColor="#fff"
             />
           }
@@ -390,11 +395,13 @@ class Index extends React.Component {
     );
   }
 
-  renderInitLoadIndicator() {
+  renderInitLoadIndicator= ()=> {
+    const {topicTrends,topicTrendsNum} = this.props;
+
     return (
       <View style={styles.container}>
         <ActivityIndicator animating={true}
-          color={topicTrends[topicTrendsNum].color.color_num}
+          color={topicTrends[topicTrendsNum].style_desc.gradient_start}
           size="large" />
       </View>
     )
@@ -413,8 +420,24 @@ class Index extends React.Component {
     }
   }
 }
-export default Index;
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+  [state=>state.topicTrends],
+  topicTrends=>topicTrends
+)
+const getTopicTrendsNum = createSelector(
+  [state=>state.topicTrendsNum],
+  topicTrendsNum=>topicTrendsNum.value
+)
+const mapStateToProps = (state)=>{
+  return {
+      topicTrends:getTopicTrends(state),
+      topicTrendsNum:getTopicTrendsNum(state),
+  }
+}
 
+
+export default connect(mapStateToProps,null)(Index);
 const styles = StyleSheet.create({
   container: {
     flex: 1,

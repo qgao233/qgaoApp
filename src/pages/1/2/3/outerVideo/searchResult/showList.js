@@ -306,7 +306,7 @@ class Index extends React.Component {
     return <Toast ref={(toast) => this.toast = toast}/> 
   }
 
-  renderInitLoadIndicator() {
+  renderInitLoadIndicator= ()=> {
     return (
       <View style={styles.container}>
         <ActivityIndicator animating={true}

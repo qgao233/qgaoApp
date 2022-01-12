@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StatusBar,Animated, Easing } from 'react-native';
-import SearchFrame from '../components/searchFrame'
+import SearchFrame from '../utils/components/searchFrame'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView  from 'react-native-scrollable-tab-view';
 import MainTabBar from './components/mainTabBar';
 import Latest from './latest';
 import Classfication from './classfication';
 import Rank from './rank';
+
 
 class Index extends React.Component {
 
@@ -16,7 +17,6 @@ class Index extends React.Component {
         this.rankRef = React.createRef();
 
         this.state = {
-            isScrollableTabViewLocked: false,//是否锁住主tab的左右滑动，只允许次级tab的左右滑动
 
             translateY:new Animated.Value(1),//0,
             scale:new Animated.Value(1),//1,
@@ -24,6 +24,7 @@ class Index extends React.Component {
             opacity:new Animated.Value(1),//1
         }
     }
+
 
     toggleSearchFrame = (bool) =>{
         const config = bool 
@@ -47,9 +48,6 @@ class Index extends React.Component {
         ]).start();
     }
 
-    toggleScrollableTabViewLock = (bool=false) =>{
-        this.setState({isScrollableTabViewLocked:bool});
-    }
 
     render() {
 
@@ -86,21 +84,12 @@ class Index extends React.Component {
                 </Animated.View>                
                 {/* tab标签栏,外层一定是弹性容器（flex:1)才会显示 */}
                 <ScrollableTabView
-                    initialPage={1} 
-                    onChangeTab={obj => {
-                        this.setState({ currIndex: obj.i,isScrollableTabViewLocked:false })
-                        if(obj.i==1){
-                            this.classficationRef.initialWithinCurrTab();
-                        }else if(obj.i==2){
-                            this.rankRef.initialWithinCurrTab();
-                        }
-                    }}
-                    locked={this.state.isScrollableTabViewLocked}
-                    renderTabBar={() => < MainTabBar />}
+                    initialPage={0} 
+                    renderTabBar={() => < MainTabBar navigation={this.props.navigation}/>}
                 >
-                    <Latest tabLabel='最新' showSearchFrame={this.toggleSearchFrame} />
-                    <Classfication locked={this.state.isScrollableTabViewLocked} ref={ref=>this.classficationRef = ref} toggleScrollableTabViewLock={this.toggleScrollableTabViewLock} tabLabel='分类' />
-                    <Rank locked={this.state.isScrollableTabViewLocked} ref={ref=>this.rankRef = ref} toggleScrollableTabViewLock={this.toggleScrollableTabViewLock} tabLabel='排行榜' />
+                    <Latest tabLabel='最新' showSearchFrame={this.toggleSearchFrame} {...this.props} />
+                    <Classfication  tabLabel='分类' />
+                    <Rank  tabLabel='排行榜' />
                 </ScrollableTabView>
                 
             </View>

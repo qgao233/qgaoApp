@@ -8,11 +8,14 @@ import {
     ScrollView
 } from 'react-native';
 import { dateDiff } from '../../../../../../../utils/funcKits';
-import { topicTrends, topicTrendsNum, articleType, screenHeight, screenWidth } from '../../../../../../../utils/stylesKits';
+import { articleType, screenHeight, screenWidth } from '../../../../../../../utils/stylesKits';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import Popover, { Rect } from 'react-native-popover-view';
-import { useNavigation } from '@react-navigation/native';
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
+import { Card } from 'react-native-shadow-cards';
+
 
 const spinnerTextArray = ["关注", "私聊", "拉黑", "举报"];
 
@@ -90,7 +93,9 @@ class Index extends React.Component {
         // return (<></>);
         return (
             <TouchableOpacity activeOpacity={0.9} onPress={() => { this.props.navigation.navigate("VideoDetail") }}>
-                <View key={index} style={{ borderRadius: 10, padding: 5, marginTop: 5, backgroundColor: "#fff" }}>
+                    <Card
+          cornerRadius={0} elevation={5} opacity={0.5} 
+          style={{ width: "auto", marginTop: 5, borderRadius: 10,backgroundColor:"#fff" }}>
                     {/* 封面 */}
                     <View style={{ position: "relative" }}>
                         <Image style={styles.img} source={item.posterPath} />
@@ -167,7 +172,7 @@ class Index extends React.Component {
 
                         </View>
                         <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-                            {/* <TouchableOpacity style={{ marginRight: 10, padding: 5, paddingLeft: 10, paddingRight: 10, backgroundColor: topicTrends[topicTrendsNum].color.color_num, borderRadius: 5 }}>
+                            {/* <TouchableOpacity style={{ marginRight: 10, padding: 5, paddingLeft: 10, paddingRight: 10, backgroundColor: topicTrends[topicTrendsNum].style_desc.gradient_start, borderRadius: 5 }}>
                             <Text style={{ color: "#fff" }}>关注</Text>
                         </TouchableOpacity> */}
                             <TouchableOpacity ref={(ref) => {
@@ -184,7 +189,7 @@ class Index extends React.Component {
 
                         </View>
                     </View>
-                </View>
+                    </Card>
             </TouchableOpacity>
         );
     }
@@ -275,11 +280,13 @@ class Index extends React.Component {
 
     _renderFooter = () => {
         let { hasMorePage, page } = this.state;
+        const {topicTrends,topicTrendsNum} = this.props;
+
         if (hasMorePage && page >= 2) {
             return (
                 <View style={{ flexDirection: 'row', height: 30, alignItems: 'center', justifyContent: 'center', }}>
                     <ActivityIndicator animating={true}
-                        color={topicTrends[topicTrendsNum].color.color_num}
+                        color={topicTrends[topicTrendsNum].style_desc.gradient_start}
                     />
                     <Text style={{ color: '#999999', fontSize: 14, }}>
                         正在加载更多数据...
@@ -343,6 +350,7 @@ class Index extends React.Component {
     }
 
     _renderHeader = () => {
+        const {topicTrends,topicTrendsNum} = this.props;
 
         return (
 
@@ -365,7 +373,7 @@ class Index extends React.Component {
 
                         </View>
                         <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-                            {/* <TouchableOpacity style={{ marginRight: 10, padding: 5, paddingLeft: 10, paddingRight: 10, backgroundColor: topicTrends[topicTrendsNum].color.color_num, borderRadius: 5 }}>
+                            {/* <TouchableOpacity style={{ marginRight: 10, padding: 5, paddingLeft: 10, paddingRight: 10, backgroundColor: topicTrends[topicTrendsNum].style_desc.gradient_start, borderRadius: 5 }}>
                             <Text style={{ color: "#fff" }}>关注</Text>
                         </TouchableOpacity> */}
                             <TouchableOpacity ref={(ref) => {
@@ -489,7 +497,7 @@ class Index extends React.Component {
                                             paddingRight: 20,
                                         }}
                                     >
-                                        <Text style={{ color: this.videoInfo.currEpisode === i ? topicTrends[topicTrendsNum].color.color_num : "#ccc", 
+                                        <Text style={{ color: this.videoInfo.currEpisode === i ? topicTrends[topicTrendsNum].style_desc.gradient_start : "#ccc", 
                                         fontSize: this.videoInfo.currEpisode === i ? 15 : 12 }} >
                                             第{i+1}集：{v}
                                         </Text>
@@ -504,7 +512,7 @@ class Index extends React.Component {
                 <LinearGradient
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0, y: 1 }}
-                    colors={["#fff", "#eee"]}>
+                    colors={["#fff", "#fefefe"]}>
                     <View style={{ paddingTop: 5, paddingLeft: 10, paddingRight: 10, alignItems: "flex-start" }}>
                         <Text style={{ fontSize: 15, color:"#5c5c5c" }}>推荐</Text>
                     </View>
@@ -516,6 +524,8 @@ class Index extends React.Component {
 
     renderFlatList = () => {
         const { isRefresh } = this.state;
+        const {topicTrends,topicTrendsNum} = this.props;
+
         return (
             <>
                 <FlatList
@@ -523,7 +533,7 @@ class Index extends React.Component {
                     renderItem={this._renderItem}
                     ListHeaderComponent={this._renderHeader}
 
-                    style={{ backgroundColor: "#eee" }}
+                    style={{ backgroundColor: "#fefefe" }}
                     numColumns={2}//两列
                     columnWrapperStyle={{ justifyContent: 'space-evenly' }}
 
@@ -531,7 +541,7 @@ class Index extends React.Component {
                         <RefreshControl
                             refreshing={isRefresh}
                             onRefresh={this._onRefresh}//上拉刷新
-                            colors={[topicTrends[topicTrendsNum].color.color_num, "#ec1a0a", "#ffc051"]}
+                            colors={[topicTrends[topicTrendsNum].style_desc.gradient_start, "#ec1a0a", "#ffc051"]}
                             progressBackgroundColor="#fff"
                         />
                     }
@@ -564,11 +574,13 @@ class Index extends React.Component {
         );
     }
 
-    renderInitLoadIndicator() {
+    renderInitLoadIndicator= ()=> {
+        const {topicTrends,topicTrendsNum} = this.props;
+
         return (
             <View style={styles.container}>
                 <ActivityIndicator animating={true}
-                    color={topicTrends[topicTrendsNum].color.color_num}
+                    color={topicTrends[topicTrendsNum].style_desc.gradient_start}
                     size="large" />
             </View>
         )
@@ -587,8 +599,24 @@ class Index extends React.Component {
         }
     }
 }
-export default Index;
-
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state=>state.topicTrends],
+    topicTrends=>topicTrends
+  )
+  const getTopicTrendsNum = createSelector(
+    [state=>state.topicTrendsNum],
+    topicTrendsNum=>topicTrendsNum.value
+  )
+  const mapStateToProps = (state)=>{
+    return {
+        topicTrends:getTopicTrends(state),
+        topicTrendsNum:getTopicTrendsNum(state),
+    }
+  }
+  
+  
+  export default connect(mapStateToProps,null)(Index);
 const styles = StyleSheet.create({
     titleViewStyle: {
         flexDirection: "row",

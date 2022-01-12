@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "605449781572",
+    "project_id": "qgao-qg233",
+    "storage_bucket": "qgao-qg233.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605449781572:android:0d1e239f0a005a809e5711",
+        "android_client_info": {
+          "package_name": "com.qgao2021"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "605449781572-lfr8klll0or9v0fc1d77db1uf9ibaq1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbKecDpf-Fu8hbxhLhj7bqSXgGWyxQdLc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "605449781572-lfr8klll0or9v0fc1d77db1uf9ibaq1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

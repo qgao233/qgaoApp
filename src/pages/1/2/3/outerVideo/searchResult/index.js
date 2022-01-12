@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StatusBar, PanResponder, Animated, Easing } from 'react-native';
-import SearchFrame from '../../components/searchFrame'
+import SearchFrame from '../../utils/components/searchFrame'
 import ShowList from './showList';
 
 class Index extends React.Component {
@@ -82,8 +82,8 @@ class Index extends React.Component {
                         
                         }} searchBoxStyle={{ width: 320, height: 40 }} photoStyle={{ width: 40, height: 40 }} />
                 </Animated.View>
-                <View>
-                    <Text>搜索结果：</Text>
+                <View style={{paddingLeft:5}}>
+                    <Text style={{fontSize:20,color:"#5c5c5c"}}>搜索结果：</Text>
                 </View>
                 <ShowList ref={(ref)=>{this.showListRef = ref}} 
                 showSearchFrame={this.toggleSearchFrame} 

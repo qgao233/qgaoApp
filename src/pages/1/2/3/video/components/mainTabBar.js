@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import {topicTrends,topicTrendsNum} from '../../../../../../utils/stylesKits'
-
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
 
 class Index extends React.Component {
     render() {
@@ -9,6 +9,8 @@ class Index extends React.Component {
         // tabs 标题数组 
         // activeTab 当前激活选中的索引
         const { goToPage, tabs, activeTab } = this.props;
+        const {topicTrends,topicTrendsNum} = this.props;
+        const {navigation} = this.props;
 
         return (
             <View style={{ flexDirection: "row", height: 40, justifyContent: "space-between", }}>
@@ -23,7 +25,7 @@ class Index extends React.Component {
                                 justifyContent: "center",
                                 paddingLeft: 10,
                                 paddingRight: 10,
-                                borderBottomColor: topicTrends[topicTrendsNum].color.color_num,
+                                borderBottomColor: topicTrends[topicTrendsNum].style_desc.gradient_start,
                                 borderBottomWidth: activeTab === i ? 2 : 0
                             }}
                         ><Text style={{ color: activeTab === i ? "#000" : "#ccc", fontSize: activeTab === i ? 18 : 15 }} >{v}</Text>
@@ -32,7 +34,9 @@ class Index extends React.Component {
                 </View>
                 <View style={{...styles.titleViewStyle}}>
                     <TouchableOpacity
-                        onPress={() => {}}
+                        onPress={() => {
+                            navigation.navigate("VideoResult")
+                        }}
                         style={{
                             justifyContent: "center",
                             paddingLeft: 5,
@@ -45,8 +49,24 @@ class Index extends React.Component {
         );
     }
 }
-export default Index;
-
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state=>state.topicTrends],
+    topicTrends=>topicTrends
+  )
+  const getTopicTrendsNum = createSelector(
+    [state=>state.topicTrendsNum],
+    topicTrendsNum=>topicTrendsNum.value
+  )
+  const mapStateToProps = (state)=>{
+    return {
+        topicTrends:getTopicTrends(state),
+        topicTrendsNum:getTopicTrendsNum(state),
+    }
+  }
+  
+  
+  export default connect(mapStateToProps,null)(Index);
 const styles = StyleSheet.create({
     titleViewStyle: {
         flexDirection: "row",

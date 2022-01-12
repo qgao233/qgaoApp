@@ -63,7 +63,7 @@ function MyDrawer() {
         drawerType: 'back',//'back',
         drawerStyle: { width: drawerWidthPerc },
         overlayColor: 'transparent',
-        swipeEdgeWidth: dimensions.width / 2,
+        swipeEdgeWidth: dimensions.width / 9,
         headerShown: false,
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} drawerWidth={drawerWidth} />}>

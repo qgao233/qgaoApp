@@ -1,38 +1,42 @@
 diff --git a/node_modules/react-native-scrollable-tab-view/index.js b/node_modules/react-native-scrollable-tab-view/index.js
-index 82e53c5..8f7a5f8 100644
+index 82e53c5..d3ebd7f 100644
 --- a/node_modules/react-native-scrollable-tab-view/index.js
 +++ b/node_modules/react-native-scrollable-tab-view/index.js
-@@ -25,7 +25,24 @@ const AnimatedViewPagerAndroid = Platform.OS === 'android' ?
-   Animated.createAnimatedComponent(ViewPager) :
+@@ -26,7 +26,7 @@ const AnimatedViewPagerAndroid = Platform.OS === 'android' ?
    undefined;
  
-+let touchPhase = 0;
-+
  const ScrollableTabView = createReactClass({
-+  //自定义开始
-+  _onPageScrollStateChanged(){
-+    if(touchPhase==2){
-+      touchPhase = 0;
-+    }else{
-+      touchPhase += 1;
-+    }
-+
-+  },
-+  _initialTouchPhase(){
-+    //不初始化的话，会导致从其它标签页切换到这个嵌套的标签页时，会有个bug，
-+    //这实际上是个bug补丁，但是偶尔还是会有滑动屏幕不起作用的时候╮(╯_╰)╭
-+    touchPhase = 2;
-+  },
-+  //自定义结束
-   mixins: [TimerMixin, ],
+-  mixins: [TimerMixin, ],
++  mixins: [TimerMixin,],
    statics: {
      DefaultTabBar,
-@@ -137,14 +154,14 @@ const ScrollableTabView = createReactClass({
+     ScrollableTabBar,
+@@ -34,7 +34,7 @@ const ScrollableTabView = createReactClass({
+   scrollOnMountCalled: false,
+ 
+   propTypes: {
+-    tabBarPosition: PropTypes.oneOf(['top', 'bottom', 'overlayTop', 'overlayBottom', ]),
++    tabBarPosition: PropTypes.oneOf(['top', 'bottom', 'overlayTop', 'overlayBottom',]),
+     initialPage: PropTypes.number,
+     page: PropTypes.number,
+     onChangeTab: PropTypes.func,
+@@ -57,8 +57,8 @@ const ScrollableTabView = createReactClass({
+       tabBarPosition: 'top',
+       initialPage: 0,
+       page: -1,
+-      onChangeTab: () => {},
+-      onScroll: () => {},
++      onChangeTab: () => { },
++      onScroll: () => { },
+       contentProps: {},
+       scrollWithoutAnimation: false,
+       locked: false,
+@@ -137,14 +137,14 @@ const ScrollableTabView = createReactClass({
      if (Platform.OS === 'ios') {
        const offset = pageNumber * this.state.containerWidth;
        if (this.scrollView) {
 -        this.scrollView.getNode().scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
-+        this.scrollView.scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
++        this.scrollView.scrollTo({ x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
        }
      } else {
        if (this.scrollView) {
@@ -45,31 +49,111 @@ index 82e53c5..8f7a5f8 100644
          }
        }
      }
-@@ -255,6 +272,9 @@ const ScrollableTabView = createReactClass({
-         style={styles.scrollableContentAndroid}
-         initialPage={this.props.initialPage}
-         onPageSelected={this._updateSelectedPage}
-+        //新增开始
-+        onPageScrollStateChanged = {this._onPageScrollStateChanged}
-+        //新增结束
-         keyboardDismissMode="on-drag"
-         scrollEnabled={!this.props.locked}
-         onPageScroll={Animated.event(
-@@ -330,6 +350,12 @@ const ScrollableTabView = createReactClass({
-     } else {
-       const { position, offset, } = e.nativeEvent;
-       this.props.onScroll(position + offset);
-+      //自定义开始，touchPhase=1时为真正的手指触摸屏幕的时间段
-+      if(touchPhase==1){
-+        this.props.onScrollExtra && this.props.onScrollExtra(offset,this.state.offsetAndroidLast);
-+        this.setState({offsetAndroidLast:offset});
-+      }
-+      //自定义结束
+@@ -166,9 +166,9 @@ const ScrollableTabView = createReactClass({
      }
    },
  
-@@ -411,3 +437,4 @@ const styles = StyleSheet.create({
-     flex: 1,
+-  updateSceneKeys({ page, children = this.props.children, callback = () => {}, }) {
++  updateSceneKeys({ page, children = this.props.children, callback = () => { }, }) {
+     let newKeys = this.newSceneKeys({ previousKeys: this.state.sceneKeys, currentPage: page, children, });
+-    this.setState({currentPage: page, sceneKeys: newKeys, }, callback);
++    this.setState({ currentPage: page, sceneKeys: newKeys, }, callback);
    },
- });
-+
+ 
+   newSceneKeys({ previousKeys = [], currentPage = 0, children = this.props.children, }) {
+@@ -221,7 +221,33 @@ const ScrollableTabView = createReactClass({
+   _makeSceneKey(child, idx) {
+     return child.props.tabLabel + '_' + idx;
+   },
+-
++  onPageScroll(evt) {
++    Animated.event(
++      [{
++        nativeEvent: {
++          position: this.state.positionAndroid,
++          offset: this.state.offsetAndroid,
++        },
++      },],
++      {
++        useNativeDriver: true,
++        listener: this._onScroll,
++      },
++    )
++    this.setState({ pageScrolling: true });
++  }
++  ,
++  onPageScrollStateChanged(evt) {
++    if ('idle' == evt.nativeEvent.pageScrollState) {
++      this.setState({ pageScrolling: false });
++    } else {
++      this.setState({ pageScrolling: true });
++    }
++  }
++  ,
++  moveShouldSetResponderCapture(evt) {
++    return this.state.pageScrolling;
++  },
+   renderScrollableContent() {
+     if (Platform.OS === 'ios') {
+       const scenes = this._composeScenes();
+@@ -232,7 +258,7 @@ const ScrollableTabView = createReactClass({
+         contentOffset={{ x: this.props.initialPage * this.state.containerWidth, }}
+         ref={(scrollView) => { this.scrollView = scrollView; }}
+         onScroll={Animated.event(
+-          [{ nativeEvent: { contentOffset: { x: this.state.scrollXIOS, }, }, }, ],
++          [{ nativeEvent: { contentOffset: { x: this.state.scrollXIOS, }, }, },],
+           { useNativeDriver: true, listener: this._onScroll, }
+         )}
+         onMomentumScrollBegin={this._onMomentumScrollBeginAndEnd}
+@@ -246,7 +272,7 @@ const ScrollableTabView = createReactClass({
+         keyboardDismissMode="on-drag"
+         {...this.props.contentProps}
+       >
+-          {scenes}
++        {scenes}
+       </Animated.ScrollView>;
+     } else {
+       const scenes = this._composeScenes();
+@@ -257,18 +283,9 @@ const ScrollableTabView = createReactClass({
+         onPageSelected={this._updateSelectedPage}
+         keyboardDismissMode="on-drag"
+         scrollEnabled={!this.props.locked}
+-        onPageScroll={Animated.event(
+-          [{
+-            nativeEvent: {
+-              position: this.state.positionAndroid,
+-              offset: this.state.offsetAndroid,
+-            },
+-          }, ],
+-          {
+-            useNativeDriver: true,
+-            listener: this._onScroll,
+-          },
+-        )}
++        onPageScroll={(evt) => this.onPageScroll(evt)}
++        onPageScrollStateChanged={(evt) => this.onPageScrollStateChanged(evt)}
++        onMoveShouldSetResponderCapture={(evt) => this.moveShouldSetResponderCapture(evt)}
+         ref={(scrollView) => { this.scrollView = scrollView; }}
+         {...this.props.contentProps}
+       >
+@@ -283,9 +300,9 @@ const ScrollableTabView = createReactClass({
+       return <SceneComponent
+         key={child.key}
+         shouldUpdated={this._shouldRenderSceneKey(idx, this.state.currentPage)}
+-        style={{width: this.state.containerWidth, }}
++        style={{ width: this.state.containerWidth, }}
+       >
+-        {this._keyExists(this.state.sceneKeys, key) ? child : <View tabLabel={child.props.tabLabel}/>}
++        {this._keyExists(this.state.sceneKeys, key) ? child : <View tabLabel={child.props.tabLabel} />}
+       </SceneComponent>;
+     });
+   },
+@@ -393,7 +410,7 @@ const ScrollableTabView = createReactClass({
+       };
+     }
+ 
+-    return <View style={[styles.container, this.props.style, ]} onLayout={this._handleLayout}>
++    return <View style={[styles.container, this.props.style,]} onLayout={this._handleLayout}>
+       {this.props.tabBarPosition === 'top' && this.renderTabBar(tabBarProps)}
+       {this.renderScrollableContent()}
+       {(this.props.tabBarPosition === 'bottom' || overlayTabs) && this.renderTabBar(tabBarProps)}

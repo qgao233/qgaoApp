@@ -1,5 +1,7 @@
 apply plugin: "com.android.application"
 
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 import com.android.build.OutputFile
 
 /**
@@ -76,9 +78,13 @@ import com.android.build.OutputFile
  *   extraPackagerArgs: []
  * ]
  */
+// def osBin = 'win64-bin';
+
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    entryFile: "index.js",
+    enableHermes: true,  // clean and rebuild if changing:android目录：gradlew build clean
+    // hermesCommand: "../../node_modules/hermes-engine/%osBin%/hermesc.exe",
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -121,6 +127,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -131,12 +138,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+
     defaultConfig {
         applicationId "com.qgao2021"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2       //自己看的
+        versionName "0.1.2"   //用户看的
     }
     splits {
         abi {
@@ -164,6 +172,9 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            versionNameSuffix "_debug"
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -171,6 +182,15 @@ android {
             signingConfig signingConfigs.release //将默认的debug 改成 release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+            shrinkResources true
+            // Zipalign优化
+            zipAlignEnabled true
+            // 设置firebase是否要自动上传
+            firebaseCrashlytics {
+                mappingFileUploadEnabled false
+            }
+
         }
     }
 
@@ -192,6 +212,11 @@ android {
 }
 
 dependencies {
+
+implementation platform('com.google.firebase:firebase-bom:29.0.3')
+implementation 'com.google.firebase:firebase-analytics'
+implementation 'com.google.firebase:firebase-crashlytics'
+
     implementation project(':react-native-splash-screen')
     
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -213,13 +238,13 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
-
-    def useIntlJsc = false
-    if (useIntlJsc) {
-        implementation 'org.webkit:android-jsc-intl:+'
-    } else {
-        implementation 'org.webkit:android-jsc:+'
-    }
+    // 想使用hermes就得注释这个
+    // def useIntlJsc = false
+    // if (useIntlJsc) {
+    //     implementation 'org.webkit:android-jsc-intl:+'
+    // } else {
+    //     implementation 'org.webkit:android-jsc:+'
+    // }
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

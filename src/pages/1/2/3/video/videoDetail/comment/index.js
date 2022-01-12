@@ -15,6 +15,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import Popover, { Rect, PopoverPlacement } from 'react-native-popover-view';
 import Modalbox from 'react-native-modalbox';
 import InputBox from '../../../../../../../utils/components/inputBox'
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
 
 const spinnerTextArray = ["关注", "私聊", "拉黑", "举报"];
 const spinnerSortArray = ["推荐", "最热", "最新"];
@@ -87,6 +89,7 @@ class Index extends React.Component {
 
     //item就是data传进去的，index就是list中每个元素的key属性
     _renderItem = ({ item, index }) => {
+        const {topicTrends,topicTrendsNum} = this.props;
 
         // return (<></>);
         return (
@@ -144,7 +147,7 @@ class Index extends React.Component {
                             <TouchableOpacity activeOpacity={0.6}
                                 onPress={() => { this.toggleReplySpinner(true, index) }}
                             >
-                                <Text style={{ fontSize: 12, color: topicTrends[topicTrendsNum].color.color_num + "e6" }}>更多回复 {">"}</Text>
+                                <Text style={{ fontSize: 12, color: topicTrends[topicTrendsNum].style_desc.gradient_start + "e6" }}>更多回复 {">"}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -239,12 +242,14 @@ class Index extends React.Component {
     }
 
     _renderFooter = () => {
+        const {topicTrends,topicTrendsNum} = this.props;
+
         let { hasMorePage, page } = this.state;
         if (hasMorePage && page >= 2) {
             return (
                 <View style={{ flexDirection: 'row', height: 30, alignItems: 'center', justifyContent: 'center', }}>
                     <ActivityIndicator animating={true}
-                        color={topicTrends[topicTrendsNum].color.color_num}
+                        color={topicTrends[topicTrendsNum].style_desc.gradient_start}
                     />
                     <Text style={{ color: '#999999', fontSize: 14, }}>
                         正在加载更多数据...
@@ -271,11 +276,13 @@ class Index extends React.Component {
         </View>
     }
 
-    renderInitLoadIndicator() {
+    renderInitLoadIndicator= ()=> {
+        const {topicTrends,topicTrendsNum} = this.props;
+
         return (
             <View style={styles.container}>
                 <ActivityIndicator animating={true}
-                    color={topicTrends[topicTrendsNum].color.color_num}
+                    color={topicTrends[topicTrendsNum].style_desc.gradient_start}
                     size="large" />
             </View>
         )
@@ -310,6 +317,8 @@ class Index extends React.Component {
 
     renderFlatList = () => {
         const { isRefresh, isReplyRefresh } = this.state;
+        const {topicTrends,topicTrendsNum} = this.props;
+
         return (
             <View style={{ position: "relative" }}>
                 <FlatList
@@ -322,7 +331,7 @@ class Index extends React.Component {
                         <RefreshControl
                             refreshing={isRefresh}
                             onRefresh={this._onRefresh}//上拉刷新
-                            colors={[topicTrends[topicTrendsNum].color.color_num, "#ec1a0a", "#ffc051"]}
+                            colors={[topicTrends[topicTrendsNum].style_desc.gradient_start, "#ec1a0a", "#ffc051"]}
                             progressBackgroundColor="#fff"
                         />
                     }
@@ -390,7 +399,7 @@ class Index extends React.Component {
                                 <RefreshControl
                                     refreshing={isReplyRefresh}
                                     onRefresh={this._onReplyRefresh}//上拉刷新
-                                    colors={[topicTrends[topicTrendsNum].color.color_num, "#ec1a0a", "#ffc051"]}
+                                    colors={[topicTrends[topicTrendsNum].style_desc.gradient_start, "#ec1a0a", "#ffc051"]}
                                     progressBackgroundColor="#fff"
                                 />
                             }
@@ -509,6 +518,7 @@ class Index extends React.Component {
     }
     //item就是data传进去的，index就是list中每个元素的key属性
     _renderReplyItem = ({ item, index }) => {
+        const {topicTrends,topicTrendsNum} = this.props;
 
         // return (<></>);
         return (
@@ -563,12 +573,12 @@ class Index extends React.Component {
                         </View>
                         {/* 2.3层 回复的谁的内容 */}
                         <View style={{
-                            borderLeftWidth: 2, borderLeftColor: topicTrends[topicTrendsNum].color.color_num,
+                            borderLeftWidth: 2, borderLeftColor: topicTrends[topicTrendsNum].style_desc.gradient_start,
                             backgroundColor: "#eee5", padding: 10
                         }}>
                             <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
                                 <Text>回复</Text>
-                                <Text style={{ paddingLeft: 5, color: topicTrends[topicTrendsNum].color.color_num, }}>{this.videoInfo.nickName}</Text>
+                                <Text style={{ paddingLeft: 5, color: topicTrends[topicTrendsNum].style_desc.gradient_start, }}>{this.videoInfo.nickName}</Text>
                                 <Text style={{ paddingLeft: 5, }}>：</Text>
                             </View>
                             <View style={{ marginTop: 10 }}>
@@ -675,8 +685,24 @@ class Index extends React.Component {
         }
     }
 }
-export default Index;
-
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state=>state.topicTrends],
+    topicTrends=>topicTrends
+  )
+  const getTopicTrendsNum = createSelector(
+    [state=>state.topicTrendsNum],
+    topicTrendsNum=>topicTrendsNum.value
+  )
+  const mapStateToProps = (state)=>{
+    return {
+        topicTrends:getTopicTrends(state),
+        topicTrendsNum:getTopicTrendsNum(state),
+    }
+  }
+  
+  
+  export default connect(mapStateToProps,null)(Index);
 const styles = StyleSheet.create({
     titleViewStyle: {
         flexDirection: "row",
