@@ -450,13 +450,18 @@ const getTopicTrendsNum = createSelector(
   [state=>state.topicTrendsNum],
   topicTrendsNum=>topicTrendsNum.value
 )
-const mapStateToProps = (state)=>{
+const mapStateToProps = (state, ownProps)=>{
   return {
       topicTrends:getTopicTrends(state),
       topicTrendsNum:getTopicTrendsNum(state),
   }
 }
-
+// const mapDispatchToProps = (dispatch, ownProps) => {
+//   return {
+//     increase: (...args) => dispatch(actions.increase(...args)),
+//     decrease: (...args) => dispatch(actions.decrease(...args))
+//   }
+// }
 
 export default connect(mapStateToProps,null)(Index);
 

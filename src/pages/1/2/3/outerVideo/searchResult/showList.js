@@ -12,6 +12,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import Popover, { Rect } from 'react-native-popover-view';
 import { getVideoList } from '../outerConfig/config';
 import Toast, {DURATION} from 'react-native-easy-toast'
+import { Card } from 'react-native-shadow-cards';
+
 
 const spinnerTextArray = ["关注", "私聊", "拉黑", "举报"];
 
@@ -59,11 +61,23 @@ class Index extends React.Component {
 
     // return (<></>);
     return (
+      <Card key={index}
+                cornerRadius={0} elevation={5} opacity={0.2}
+                style={{
+                    width: "auto",
+                    // height: 160,
+                    marginTop: 10, marginLeft: 5, marginRight: 5, borderRadius: 20, backgroundColor: "#fff"
+                }}>
       <TouchableOpacity activeOpacity={0.9} onPress={() => { this.props.navigation.navigate("OuterVideoDetail",{videoId:item.vod_id}) }}>
-        <View key={index} style={{ borderRadius: 10, padding: 5, marginTop: 5, backgroundColor: "#fff" }}>
+        <View key={index} style={{ borderRadius: 20, height: screenWidth / 2.2 * 16 / 7.3, backgroundColor: "#fff" }}>
           {/* 封面 */}
           <View style={{ position: "relative" }}>
-            <Image style={styles.img} source={{uri:replaceSlash(item.vod_pic)}} />
+            <Image style={{
+              width: screenWidth / 2.2,
+              height: screenWidth / 2.2 * 16 / 9,
+              resizeMode: 'stretch',
+              borderTopLeftRadius:10,borderTopRightRadius:10,
+            }} source={{uri:replaceSlash(item.vod_pic)}} />
             <View style={{ position: "absolute", bottom: 0, left: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-around" }}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <FontAwesomeIcon name="play-circle-o" size={styles.widget.fontSize} color={styles.widget.color} />
@@ -128,6 +142,7 @@ class Index extends React.Component {
           </View>
         </View>
       </TouchableOpacity>
+      </Card>
     );
   }
 
@@ -195,7 +210,7 @@ class Index extends React.Component {
           sizePerPage: data.limit,
         })
       }
-
+      this.props.closeLoadingIndicator();
     }).catch((errObj)=>{
       this.toast.show(JSON.stringify( errObj));
     })
@@ -241,7 +256,7 @@ class Index extends React.Component {
         <FlatList
           data={this.state.data}
           renderItem={this._renderItem}
-          style={{ backgroundColor: "#eee" }}
+          style={{ backgroundColor: "#fff" }}
           numColumns={2}//两列
           columnWrapperStyle={{ justifyContent: 'space-evenly' }}
 

@@ -11,7 +11,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-async-storage/async-storage": "^1.15.16",
     "@react-native-community/viewpager": "^5.0.11",
     "@react-native-firebase/app": "^14.2.2",
     "@react-native-firebase/crashlytics": "^14.2.2",
@@ -29,6 +29,7 @@
     "react": "17.0.1",
     "react-native": "0.64.0",
     "react-native-confirmation-code-field": "^7.2.0",
+    "react-native-device-info": "^8.4.8",
     "react-native-easy-toast": "^2.0.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-head-tab-view": "^4.0.0-rc.13",

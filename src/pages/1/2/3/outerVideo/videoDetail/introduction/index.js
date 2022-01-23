@@ -477,6 +477,8 @@ class Index extends React.Component {
                                             onPress={() => {
                                                 let obj = {
                                                     videoSource: v.split("$")[1],
+                                                    currEpisodeName:v.split("$")[0],
+
                                                     currEpisode: i,
                                                     videoPoster,
                                                 }
@@ -619,6 +621,7 @@ class Index extends React.Component {
             onPress={() => {
                 let obj = {
                     videoSource: item.split("$")[1],
+                    currEpisodeName:item.split("$")[0],
                     currEpisode: index,
                     videoPoster: this.state.videoPoster,
                 }
@@ -658,7 +661,8 @@ class Index extends React.Component {
     }
 
     getVideoResource = () => {
-        const { videoId } = this.props.route.params;
+        let { videoId,currEpisode } = this.props.route.params;
+        if(!currEpisode) currEpisode = 0;
         // console.log("videoId:", videoId)
         const obj = {
             ids: videoId
@@ -666,24 +670,24 @@ class Index extends React.Component {
         getVideoDetail(obj).then((data) => {
             this.isFinishGetVideoData = true;
             const tmpStr = splitVideoUrl(replaceSlash(data.list[0].vod_play_url));
-            console.log("播放网址：", tmpStr[0].split("$")[1]);
+            console.log("播放网址：", tmpStr[currEpisode].split("$")[1]);
             console.log("封面：", replaceSlash(data.list[0].vod_pic));
             console.log("标签：", splitVideoTags(data.list[0].vod_tag));
             this.setState({
-                videoSource: tmpStr[0].split("$")[1],
+                videoSource: tmpStr[currEpisode].split("$")[1],
                 videoPoster: replaceSlash(data.list[0].vod_pic),
                 videoEpisodes: tmpStr,
                 videoTitle: data.list[0].vod_name,
                 videoTime: data.list[0].vod_time,
                 videoContent: data.list[0].vod_content,
                 videoTags: splitVideoTags(data.list[0].vod_tag),
-                currEpisode: 0
+                currEpisode: currEpisode,
             })
-            const { videoSource, currEpisode, videoPoster } = this.state;
             let obj = {
-                videoSource,
-                currEpisode,
-                videoPoster,
+                videoSource: tmpStr[currEpisode].split("$")[1],
+                videoPoster: replaceSlash(data.list[0].vod_pic),
+                currEpisode: currEpisode,
+                currEpisodeName:tmpStr[currEpisode].split("$")[0],
             }
             this.props.changeEpisode(obj)
 

@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StatusBar, PanResponder, Animated, Easing,TouchableOpacity } from 'react-native';
-import SearchFrame from '../utils/components/searchFrame'
+import { View, Text, StatusBar, PanResponder, Animated, Easing, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import MainTabBar from './components/mainTabBar';
@@ -9,6 +8,11 @@ import Classfication from './classfication';
 import Rank from './rank';
 import Modalbox from 'react-native-modalbox';
 import { screenWidth } from '../../../../../utils/stylesKits';
+import { createSelector } from '@reduxjs/toolkit';
+import { connect } from 'react-redux';
+import { initOuterRecentBrowseAsync } from './recentBrowse/outerRecentBrowseSlice'
+import Feather from 'react-native-vector-icons/Feather'
+import SearchBox from '../../../../../utils/components/inputBox'
 
 class Index extends React.Component {
 
@@ -48,6 +52,10 @@ class Index extends React.Component {
         ]).start();
     }
 
+    componentDidMount() {
+        //初始化最近浏览
+        this.props.dispatchInitOuterRecentBrowseAsync();
+    }
 
     render() {
 
@@ -69,8 +77,10 @@ class Index extends React.Component {
             outputRange: [0, 1]
         })
 
+        const {topicTrends,topicTrendsNum} = this.props;
+
         return (
-            <View style={{ flex: 1, paddingTop: 30 }}>
+            <View style={{ flex: 1, paddingTop: 30,backgroundColor:"#fff" }}>
                 <StatusBar backgroundColor="transparent" barStyle="dark-content" translucent={true} hidden={false} />
                 {/* 搜索框 */}
                 <Animated.View
@@ -80,7 +90,23 @@ class Index extends React.Component {
                         opacity: opacity,
                     }}
                 >
-                    <SearchFrame onPressSubmit={(keyTxt) => { this.props.navigation.navigate("SearchResult", { keyWord: keyTxt }) }} searchBoxStyle={{ width: 320, height: 40 }} photoStyle={{ width: 40, height: 40 }} />
+                    <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
+                        <SearchBox
+                            onPressSubmit={(inputTxt) => { this.props.navigation.navigate("OuterSearchResult", { keyWord: inputTxt }) }}
+                            inputColorOpacity="22"
+                            inputTopicColor={topicTrends[topicTrendsNum].style_desc.gradient_start}
+                            inputWidth={320}
+                            inputHeight={40}
+                            // inputFontSize={20}
+                            inputPlaceholder="搜索"
+                            inputButtonText="搜索"
+                        />
+                        <TouchableOpacity activeOpacity={0.7}
+                            onPress={()=>{this.props.navigation.navigate("OuterRecentBrowse")}}
+                        >
+                            <Feather name='clock' size={30} color='#ddd9' />
+                        </TouchableOpacity>
+                    </View>
                 </Animated.View>
                 {/* tab标签栏,外层一定是弹性容器（flex:1)才会显示 */}
                 <ScrollableTabView
@@ -88,8 +114,7 @@ class Index extends React.Component {
                     renderTabBar={() => < MainTabBar />}
                 >
                     <Latest tabLabel='最新' showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation} />
-                    <Classfication showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation}  tabLabel='分类' />
-                    <Rank showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation}  tabLabel='排行榜' />
+                    <Classfication showSearchFrame={this.toggleSearchFrame} navigation={this.props.navigation} tabLabel='分类' />
                 </ScrollableTabView>
                 {/* reply模态框 */}
                 <Modalbox
@@ -135,4 +160,25 @@ class Index extends React.Component {
         );
     }
 }
-export default Index;
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state => state.topicTrends],
+    topicTrends => topicTrends
+)
+const getTopicTrendsNum = createSelector(
+    [state => state.topicTrendsNum],
+    topicTrendsNum => topicTrendsNum.value
+)
+const mapStateToProps = (state, ownProps) => {
+    return {
+        topicTrends: getTopicTrends(state),
+        topicTrendsNum: getTopicTrendsNum(state),
+    }
+}
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        dispatchInitOuterRecentBrowseAsync: () => dispatch(initOuterRecentBrowseAsync()),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

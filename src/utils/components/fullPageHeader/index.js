@@ -9,7 +9,7 @@ import { selectTopicTrends } from '../../../utils/slice/topicTrendsSlice'
 
 import { useNavigation } from '@react-navigation/native';
 
-const statusBarPadFontColor = ["light-content","dark-content"]
+const statusBarPadFontColor = ["light-content", "dark-content"]
 
 function fullPageHeader(props) {
 
@@ -28,6 +28,8 @@ function fullPageHeader(props) {
         gradientStartColor,
         gradientEndColor,
         style,
+
+        isNeedPaddingHeight,
     } = props;
 
     const topicTrendsNum = useSelector(selectTopicTrendsNum);
@@ -40,15 +42,15 @@ function fullPageHeader(props) {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             colors={
-                [gradientStartColor?gradientStartColor:topicTrends[topicTrendsNum].style_desc.gradient_start,
-                gradientEndColor?gradientEndColor:topicTrends[topicTrendsNum].style_desc.gradient_end]
+                [gradientStartColor ? gradientStartColor : topicTrends[topicTrendsNum].style_desc.gradient_start,
+                gradientEndColor ? gradientEndColor : topicTrends[topicTrendsNum].style_desc.gradient_end]
             }
-            style={{  ...style }}
+            style={{ ...style }}
         >
-            <StatusBar backgroundColor="transparent" barStyle={isShowStatusBarPad?statusBarPadFontColor[statusBarPadFontColorIndex]:"light-content"} translucent={true} hidden={false} />
-            <View style={{ height: NativeModules.StatusBarManager.HEIGHT, backgroundColor: isShowStatusBarPad?statusBarPadBackgroundColor:"transparent", width: screenWidth }}></View>
-            
-            <View style={{position: "relative", alignItems: "center", height: headerHeight,justifyContent:"center"}}>
+            <StatusBar backgroundColor="transparent" barStyle={isShowStatusBarPad ? statusBarPadFontColor[statusBarPadFontColorIndex] : "light-content"} translucent={true} hidden={false} />
+            <View style={{ height: NativeModules.StatusBarManager.HEIGHT, backgroundColor: isShowStatusBarPad ? statusBarPadBackgroundColor : "transparent", width: screenWidth }}></View>
+
+            <View style={{ position: "relative", alignItems: "center", height: headerHeight, justifyContent: "center" }}>
                 <TouchableOpacity
                     onPress={() => { navigation.goBack() }}
                     activeOpacity={0.8} style={{ position: "absolute", left: 15, flexDirection: "row", alignItems: "center" }}
@@ -71,11 +73,11 @@ fullPageHeader.defaultProps = {
     leftIconName: "chevron-left",
     leftName: "返回",
     middleName: "",
-    rightComponent: (props)=>{},
+    rightComponent: (props) => { },
     headerHeight: 50,
-    isShowStatusBarPad:false,
-    statusBarPadFontColorIndex:1,
-    statusBarPadBackgroundColor:"#fff",
+    isShowStatusBarPad: false,
+    statusBarPadFontColorIndex: 1,
+    statusBarPadBackgroundColor: "#fff",
 }
 
 export default fullPageHeader;

@@ -22,7 +22,8 @@ import VideoResult from './2/3/video/searchResult'
 //外链视频
 import OuterVideoHome from './2/3/outerVideo/videoHome';
 import OuterVideoDetail from './2/3/outerVideo/videoDetail';
-import SearchResult from './2/3/outerVideo/searchResult';
+import OuterSearchResult from './2/3/outerVideo/searchResult';
+import OuterRecentBrowse from './2/3/outerVideo/recentBrowse';
 
 //我的
 import UserInfo from './2/3/account/userInfo'
@@ -92,7 +93,7 @@ export default () => {
     return (
         <>
             <ContentStack.Navigator screenOptions={{ headerShown: false }}
-                // initialRouteName="RenderHtmlTest"
+                // initialRouteName="OuterVideoHome"
             >{/* 更改了路由页面后，要reload才能使页面发生改变 */}
 
                 <ContentStack.Group >
@@ -138,10 +139,16 @@ export default () => {
                     <ContentStack.Screen name="VideoResult" component={VideoResult} />
                 </ContentStack.Group>
                 {/* 外链视频 */}
-                <ContentStack.Group screenOptions={{ presentation: 'modal' }}>
+                <ContentStack.Group screenOptions={{ 
+                    presentation: 'modal',
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    gestureEnabled: true,
+                    gestureDirection: "horizontal",
+                 }}>
                     <ContentStack.Screen name="OuterVideoHome" component={OuterVideoHome} />
                     <ContentStack.Screen name="OuterVideoDetail" component={OuterVideoDetail} />
-                    <ContentStack.Screen name="SearchResult" component={SearchResult} />
+                    <ContentStack.Screen name="OuterSearchResult" component={OuterSearchResult} />
+                    <ContentStack.Screen name="OuterRecentBrowse" component={OuterRecentBrowse} />
                 </ContentStack.Group>
                 {/* 我的 */}
                 <ContentStack.Group screenOptions={{

@@ -278,7 +278,10 @@ class Index extends React.Component {
                             paddingRight: inputWidth > inputHeight ? inputWidth / 4.5 : inputHeight / 4.5
                         }}
                         onSubmitEditing={() => { this.props.onPressSubmit(this.state.textValue) }}
-                        onChangeText={(value) => this.setState({ textValue: value })}
+                        onChangeText={(value) => {
+                            this.props.onChangeText && this.props.onChangeText(value)
+                            this.setState({ textValue: value })
+                        }}
                         value={this.state.textValue}
                         onBlur={this.closeInput}
                         returnKeyType="go"

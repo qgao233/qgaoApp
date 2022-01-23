@@ -1,15 +1,21 @@
 import React from 'react';
 import { View, Text, StatusBar, StyleSheet,TouchableOpacity, TouchableWithoutFeedback, PanResponder, Alert, Vibration } from 'react-native';
-import { topicTrends, topicTrendsNum, screenWidth, screenHeight } from "../../../../../../utils/stylesKits";
+import { topicTrends,topicTrendsNum, screenWidth, screenHeight } from "../../../../../../utils/stylesKits";
 import VideoPlayer from "../../../../../../utils/components/videoPlayer"
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Introduction from './introduction';
 import Comment from './comment';
 import {getVideoDetail} from '../outerConfig/config'
 import { dateDiff,replaceSlash,splitVideoUrl,splitVideoTags } from '../../../../../../utils/funcKits';
+import { connect } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
+import { useTopicTrends } from '../../utils/hooks';
+import {addOuterRecentBrowseAsync} from '../recentBrowse/outerRecentBrowseSlice'
 
 function TabBar(props) {
     const { goToPage, tabs, activeTab } = props;
+
+    const {topicTrends,topicTrendsNum} = useTopicTrends();
 
     return (
         <View style={{ backgroundColor:"#fff",flexDirection: "row", height: 40, justifyContent: "space-evenly",borderBottomWidth:0.25,borderBottomColor:"#ccc" }}>
@@ -23,7 +29,9 @@ function TabBar(props) {
                             justifyContent: "center",
                             paddingLeft: 10,
                             paddingRight: 10,
-                            borderBottomColor: topicTrends[topicTrendsNum].color.color_num,
+                            // borderBottomColor: topicTrends[topicTrendsNum].color.color_num ,
+                            borderBottomColor: topicTrends[topicTrendsNum].style_desc.gradient_start ,
+
                             borderBottomWidth: activeTab === i ? 2 : 0
                         }}
                     ><Text style={{ color: activeTab === i ? "#000" : "#ccc", fontSize: activeTab === i ? 18 : 15 }} >{v}</Text>
@@ -43,7 +51,6 @@ class Index extends React.Component {
             statusBarPadding: { paddingTop: 30 },
             isStatusBarShow: true,
         }
-        // this.getVideoResource();
     }
 
     onEnterFullScreen = () => {
@@ -59,13 +66,17 @@ class Index extends React.Component {
         })
     }
 
-    
 
-    componentDidMount(){
-        // this.getVideoResource();
-    }
-
-    changeEpisode = ({videoSource,currEpisode,videoPoster})=>{
+    changeEpisode = ({videoSource,currEpisode,videoPoster,currEpisodeName})=>{
+        const {from,videoId} = this.props.route.params;
+        // if(!from || from != "recentBrowse"){
+            this.props.dispatchAddOuterRecentBrowseAsync({
+                visitedVideoId: videoId,
+                visitedEpisodeId: currEpisode,
+                visitedEpisodeName:currEpisodeName,
+                visitedTime: new Date().getTime(),
+            })
+        // }
         this.setState({
             videoSource,currEpisode,videoPoster
         })
@@ -97,4 +108,31 @@ class Index extends React.Component {
     }
 
 }
-export default Index;
+//使用reselect机制，防止不避要的re-render
+const getTopicTrends = createSelector(
+    [state => state.topicTrends],
+    topicTrends => topicTrends
+)
+const getTopicTrendsNum = createSelector(
+    [state => state.topicTrendsNum],
+    topicTrendsNum => topicTrendsNum.value
+)
+const getOuterRecentBrowse = createSelector(
+    [state => state.outerRecentBrowse],
+    outerRecentBrowse => outerRecentBrowse
+)
+const mapStateToProps = (state) => {
+    return {
+        topicTrends: getTopicTrends(state),
+        topicTrendsNum: getTopicTrendsNum(state),
+        outerRecentBrowse: getOuterRecentBrowse(state),
+    }
+}
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatchAddOuterRecentBrowseAsync: (args) => dispatch(addOuterRecentBrowseAsync(args))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);
+// export default Index;

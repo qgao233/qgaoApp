@@ -1,3 +1,11 @@
+export const isEmptyObject = (e) => {
+    var t;  
+    for (t in e)  
+        return !1;  
+    return !0;  
+    
+}
+
 export const replaceSlash = (str) =>{
     return str.replace(new RegExp("\/", 'g'), "/"); //将所有的\/替换为/
 }
