@@ -1,42 +1,42 @@
 import React from 'react';
-import { View, Text, StatusBar, StyleSheet,TouchableOpacity, TouchableWithoutFeedback, PanResponder, Alert, Vibration } from 'react-native';
-import { topicTrends,topicTrendsNum, screenWidth, screenHeight } from "../../../../../../utils/stylesKits";
+import { View, Text, StatusBar, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, PanResponder, Alert, Vibration } from 'react-native';
+import { topicTrends, topicTrendsNum, screenWidth, screenHeight } from "../../../../../../utils/stylesKits";
 import VideoPlayer from "../../../../../../utils/components/videoPlayer"
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import Introduction from './introduction';
 import Comment from './comment';
-import {getVideoDetail} from '../outerConfig/config'
-import { dateDiff,replaceSlash,splitVideoUrl,splitVideoTags } from '../../../../../../utils/funcKits';
+import { getVideoDetail } from '../outerConfig/config'
+import { dateDiff, replaceSlash, splitVideoUrl, splitVideoTags } from '../../../../../../utils/funcKits';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 import { useTopicTrends } from '../../utils/hooks';
-import {addOuterRecentBrowseAsync} from '../recentBrowse/outerRecentBrowseSlice'
+import { addOuterRecentBrowseAsync, updateOuterRecentBrowseAsync } from '../recentBrowse/outerRecentBrowseSlice'
 
 function TabBar(props) {
     const { goToPage, tabs, activeTab } = props;
 
-    const {topicTrends,topicTrendsNum} = useTopicTrends();
+    const { topicTrends, topicTrendsNum } = useTopicTrends();
 
     return (
-        <View style={{ backgroundColor:"#fff",flexDirection: "row", height: 40, justifyContent: "space-evenly",borderBottomWidth:0.25,borderBottomColor:"#ccc" }}>
-                {tabs.map((v, i) =>
-                    <TouchableOpacity
-                        key={i}
-                        onPress={() => {
-                            goToPage(i)
-                        }}
-                        style={{
-                            justifyContent: "center",
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            // borderBottomColor: topicTrends[topicTrendsNum].color.color_num ,
-                            borderBottomColor: topicTrends[topicTrendsNum].style_desc.gradient_start ,
+        <View style={{ backgroundColor: "#fff", flexDirection: "row", height: 40, justifyContent: "space-evenly", borderBottomWidth: 0.25, borderBottomColor: "#ccc" }}>
+            {tabs.map((v, i) =>
+                <TouchableOpacity
+                    key={i}
+                    onPress={() => {
+                        goToPage(i)
+                    }}
+                    style={{
+                        justifyContent: "center",
+                        paddingLeft: 10,
+                        paddingRight: 10,
+                        // borderBottomColor: topicTrends[topicTrendsNum].color.color_num ,
+                        borderBottomColor: topicTrends[topicTrendsNum].style_desc.gradient_start,
 
-                            borderBottomWidth: activeTab === i ? 2 : 0
-                        }}
-                    ><Text style={{ color: activeTab === i ? "#000" : "#ccc", fontSize: activeTab === i ? 18 : 15 }} >{v}</Text>
-                    </TouchableOpacity>
-                )}
+                        borderBottomWidth: activeTab === i ? 2 : 0
+                    }}
+                ><Text style={{ color: activeTab === i ? "#000" : "#ccc", fontSize: activeTab === i ? 18 : 15 }} >{v}</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 }
@@ -50,6 +50,8 @@ class Index extends React.Component {
         this.state = {
             statusBarPadding: { paddingTop: 30 },
             isStatusBarShow: true,
+
+            videoProgress:0,
         }
     }
 
@@ -67,29 +69,49 @@ class Index extends React.Component {
     }
 
 
-    changeEpisode = ({videoSource,currEpisode,videoPoster,currEpisodeName})=>{
-        const {from,videoId} = this.props.route.params;
+    changeEpisode = ({ videoSource, currEpisode, videoPoster, currEpisodeName,videoProgress }) => {
+        const { from, videoId } = this.props.route.params;
+        if(!videoProgress) videoProgress = 0;
+
         // if(!from || from != "recentBrowse"){
-            this.props.dispatchAddOuterRecentBrowseAsync({
-                visitedVideoId: videoId,
-                visitedEpisodeId: currEpisode,
-                visitedEpisodeName:currEpisodeName,
-                visitedTime: new Date().getTime(),
-            })
+        this.props.dispatchAddOuterRecentBrowseAsync({
+            visitedVideoId: videoId,
+            visitedEpisodeId: currEpisode,
+            visitedEpisodeName: currEpisodeName,
+            visitedTime: new Date().getTime(),
+            visitedProgress:videoProgress,
+        })
         // }
         this.setState({
-            videoSource,currEpisode,videoPoster
+            videoSource, currEpisode, videoPoster,videoProgress
+        })
+    }
+
+    updateRecentProgress = ({ progressTime }) => {
+        const { videoId } = this.props.route.params;
+
+        this.props.dispatchUpdateOuterRecentBrowseAsync({
+            visitedVideoId: videoId,
+            visitedEpisodeId: this.state.currEpisode,
+            visitedProgress: progressTime,
         })
     }
 
     render() {
 
-        const {videoSource,videoPoster} = this.state;
+        const { videoSource, videoPoster,videoProgress } = this.state;
 
         return (
             <View style={{ flex: 1, ...this.state.statusBarPadding }}>
                 <StatusBar backgroundColor="#000" barStyle="light-content" translucent={true} hidden={!this.state.isStatusBarShow} />
-                <VideoPlayer videoSource={videoSource} videoPoster={videoPoster} onEnterFullScreen={() => { this.onEnterFullScreen() }} onExitFullScreen={() => { this.onExitFullScreen() }}></VideoPlayer>
+                <VideoPlayer
+                    videoSource={videoSource}
+                    videoPoster={videoPoster}
+                    onEnterFullScreen={() => { this.onEnterFullScreen() }}
+                    onExitFullScreen={() => { this.onExitFullScreen() }}
+                    onProgress={(obj) => { this.updateRecentProgress(obj) }}
+                    videoProgress={videoProgress}
+                />
                 {/* tab标签栏,外层一定是弹性容器（flex:1)才会显示 */}
                 <ScrollableTabView
                     initialPage={0}
@@ -98,8 +120,8 @@ class Index extends React.Component {
                     }}
                     renderTabBar={() => < TabBar />}
                 >
-                    <Introduction tabLabel='简介' changeEpisode={(obj)=>{this.changeEpisode(obj)}}
-                     {...this.props} {...this.state} />
+                    <Introduction tabLabel='简介' changeEpisode={(obj) => { this.changeEpisode(obj) }}
+                        {...this.props} {...this.state} />
                     <Comment tabLabel='评论'></Comment>
                 </ScrollableTabView>
 
@@ -130,7 +152,9 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = (dispatch) => {
     return {
-        dispatchAddOuterRecentBrowseAsync: (args) => dispatch(addOuterRecentBrowseAsync(args))
+        dispatchAddOuterRecentBrowseAsync: (args) => dispatch(addOuterRecentBrowseAsync(args)),
+        dispatchUpdateOuterRecentBrowseAsync: (args) => dispatch(updateOuterRecentBrowseAsync(args)),
+
     }
 }
 

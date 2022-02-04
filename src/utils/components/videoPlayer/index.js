@@ -265,6 +265,9 @@ export default function videoPlayer(props) {
 
         setIsBuffering(false);//对应播放时，调整进度时的“缓冲显示”
         setLoadSuccess(false);
+
+        //更新“最近浏览”的观看进度时间
+        props.onProgress && props.onProgress({ progressTime: currentTime });
     }
 
     //点击进度条,进行进度调整
@@ -396,6 +399,8 @@ export default function videoPlayer(props) {
 
     const onLoadStart = () => {
         setLoadStart(true);
+        setLoadSuccess(false)
+
         setPlayedWidth(0);
         setCachedWidth(0);
         setCurrentTimeFormat("00:00");
@@ -407,6 +412,17 @@ export default function videoPlayer(props) {
         let durationFormat = videoTimeFormat(duration);
         setDuration(duration);
         setDurationFormat(durationFormat);
+
+        if (props.videoProgress) {
+            let currentTime = props.videoProgress;
+            let playedWidth = currentTime / duration * videoWidth;
+            let currentTimeFormat = videoTimeFormat(currentTime);
+            videoPlayerRef.current.seek(currentTime);//更改已经观看过的进度
+
+            setPlayedWidth(playedWidth);
+            setCurrentTime(currentTime);
+            setCurrentTimeFormat(currentTimeFormat);
+        }
 
         setLoadStart(false)
         setLoadSuccess(true)
@@ -483,12 +499,12 @@ export default function videoPlayer(props) {
             >
                 {isWidgetShow
                     ?
-                    <TouchableOpacity 
-                    style={{
-                        position: "absolute", zIndex: 10,
-                        flexDirection:"row",alignItems:"center",marginLeft:10,
-                    }}
-                    onPress={()=>{navigation.goBack()}}>
+                    <TouchableOpacity
+                        style={{
+                            position: "absolute", zIndex: 10,
+                            flexDirection: "row", alignItems: "center", marginLeft: 10,
+                        }}
+                        onPress={() => { navigation.goBack() }}>
                         <Feather name="chevron-left" size={20} color="#fff" />
                         <Text style={{ fontSize: 20, color: "#fff" }}>返回</Text>
                     </TouchableOpacity>

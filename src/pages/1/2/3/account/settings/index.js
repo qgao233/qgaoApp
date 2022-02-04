@@ -7,6 +7,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useDispatch, useSelector } from 'react-redux';
 import { changeLoginStatus, selectLoginStatus } from '../../utils/slice/loginStatusSlice'
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default (props) => {
 
@@ -14,7 +16,9 @@ export default (props) => {
     const loginStatus = useSelector(selectLoginStatus)
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#eee" }}>
+        <SafeAreaView
+            edges={['left', 'right']}
+            style={{ flex: 1, backgroundColor: "#eee" }}>
             {/* <StatusBar backgroundColor="transparent" barStyle="dark-content" translucent={true} hidden={false} /> */}
             {/* 第1层 返回头部 */}
             <FullPageHeader style={{}} middleName="设置" rightComponent={(props) =>
@@ -140,6 +144,6 @@ export default (props) => {
 
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     )
 }

@@ -11,13 +11,15 @@ import { useNavigationState } from '@react-navigation/native';
 import Toast, { DURATION } from 'react-native-easy-toast'
 
 //文章
-import ArticleDetail from './2/3/article/articleDetail';
-import ArticleResult from './2/3/article/searchResult'
+import ArticleDetail from './2/3/resourcePool/article/articleDetail';
 
 //视频
-import VideoDetail from './2/3/video/videoDetail';
-import VideoResult from './2/3/video/searchResult'
+import VideoDetail from './2/3/resourcePool/video/videoDetail';
 
+//聊天
+import ChatScreen from './2/3/chat/chatScreen';
+import MoreChatRooms from './2/3/chat/moreChatRooms';
+import DoUser from './2/3/chat/doUser';
 
 //外链视频
 import OuterVideoHome from './2/3/outerVideo/videoHome';
@@ -42,9 +44,11 @@ import Suggestion from './2/3/account/settings/suggestion'
 import Disclaimer from './2/3/account/settings/disclaimer'
 import AboutMe from './2/3/account/settings/aboutMe'
 
-//创建模块
+//额外模块
 import CreateArticle from './2/3/modules/createArticle';
 import CreateVideo from './2/3/modules/createVideo';
+import SearchResult from './2/3/modules/search/searchResult'
+import Search from './2/3/modules/search';
 
 //登录/注册
 import Register from './2/3/account/register';
@@ -93,7 +97,7 @@ export default () => {
     return (
         <>
             <ContentStack.Navigator screenOptions={{ headerShown: false }}
-                // initialRouteName="OuterVideoHome"
+                // initialRouteName="Search"
             >{/* 更改了路由页面后，要reload才能使页面发生改变 */}
 
                 <ContentStack.Group >
@@ -125,8 +129,6 @@ export default () => {
                     gestureDirection: "horizontal",
                  }}>
                     <ContentStack.Screen name="ArticleDetail" component={ArticleDetail} />
-                    <ContentStack.Screen name="ArticleResult" component={ArticleResult} />
-
                 </ContentStack.Group>
                 {/* 视频 */}
                 <ContentStack.Group screenOptions={{ 
@@ -136,7 +138,17 @@ export default () => {
                     gestureDirection: "horizontal",
                  }}>
                     <ContentStack.Screen name="VideoDetail" component={VideoDetail} />
-                    <ContentStack.Screen name="VideoResult" component={VideoResult} />
+                </ContentStack.Group>
+                {/* 聊天 */}
+                <ContentStack.Group screenOptions={{ 
+                    presentation: 'modal',
+                    cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+                    gestureEnabled: true,
+                    gestureDirection: "horizontal",
+                 }}>
+                    <ContentStack.Screen name="ChatScreen" component={ChatScreen} />
+                    <ContentStack.Screen name="MoreChatRooms" component={MoreChatRooms} />
+                    <ContentStack.Screen name="DoUser" component={DoUser} />
                 </ContentStack.Group>
                 {/* 外链视频 */}
                 <ContentStack.Group screenOptions={{ 
@@ -180,7 +192,7 @@ export default () => {
                     <ContentStack.Screen name="Disclaimer" component={Disclaimer} />
                     <ContentStack.Screen name="AboutMe" component={AboutMe} />
                 </ContentStack.Group>
-                {/* 创建模块 */}
+                {/* 额外模块 */}
                 <ContentStack.Group screenOptions={{
                     presentation: 'modal',
                     cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
@@ -189,6 +201,8 @@ export default () => {
                 }}>
                     <ContentStack.Screen name="CreateArticle" component={CreateArticle} />
                     <ContentStack.Screen name="CreateVideo" component={CreateVideo} />
+                    <ContentStack.Screen name="SearchResult" component={SearchResult} />
+                    <ContentStack.Screen name="Search" component={Search} />
                 </ContentStack.Group>
                 {/* 登录/注册 */}
                 <ContentStack.Group screenOptions={{

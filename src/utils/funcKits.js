@@ -1,3 +1,20 @@
+export const calcStringLen = (str) =>{
+    var b = 0; 
+    var l = str.length;  //初始化字节数递加变量并获取字符串参数的字符个数
+    if(l) {  //如果存在字符串，则执行计划
+        for(var i = 0; i < l; i ++) {  //遍历字符串，枚举每个字符
+            if(str.charCodeAt(i) > 255) {  //字符编码大于255，说明是双字节字符
+                b += 2;  //则累加2个
+            }else {
+                b ++;  //否则递加一次
+            }
+        }
+        return b;  //返回字节数
+    } else {
+        return 0;  //如果参数为空，则返回0个
+    }
+}
+
 export const isEmptyObject = (e) => {
     var t;  
     for (t in e)  
@@ -64,13 +81,13 @@ export const dateDiff = (timeStamp) => {
         // 超过1周，直接显示年月日
         return dateToString(new Date(timeStamp), now.getFullYear());
     } else if (dayC >= 1) {
-        return parseInt(dayC) + " days ago";
+        return parseInt(dayC) + " 天前";
     } else if (hourC >= 1) {
-        return parseInt(hourC) + " hours ago";
+        return parseInt(hourC) + " 小时前";
     } else if (minC >= 1) {
-        return parseInt(minC) + " minutes ago";
+        return parseInt(minC) + " 分钟前";
     }
-    return parseInt(secondC) + ' seconds ago';
+    return parseInt(secondC) + ' 秒前';
 };
 
 //1.不在本年以内的：yy-MM-dd

@@ -3,10 +3,16 @@ import { View, Text, TouchableOpacity, Vibration } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SvgUri from '../../../../utils/components/svg/svgUri';
-import { article, articleSelect, video, videoSelect, plusSymbol, activity, activitySelect, account, accountSelect } from '../../../../res/img/svg/customSvg';
-import ArticleHome from './article/articleHome';
-import VideoHome from './video/videoHome';
-import ActivityHome from './activity/activityHome';
+import { article, articleSelect, video, videoSelect, plusSymbol, 
+    activity, activitySelect, 
+    account, accountSelect,
+    home,homeSelect,
+    res,resSelect,
+} from '../../../../res/img/svg/customSvg';
+import MainPage from './mainPage';
+import ResourcePool from './resourcePool';
+
+import ChatHome from './chat/chatHome';
 import AccountHome from './account/accountHome';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -63,12 +69,12 @@ function MyTabBar({ state, descriptors, navigation }) {
                     let inactiveIcon = '';
                     switch (index) {
                         case 0:
-                            activeIcon = articleSelect;
-                            inactiveIcon = article;
+                            activeIcon = homeSelect;
+                            inactiveIcon = home;
                             break;
                         case 1:
-                            activeIcon = videoSelect;
-                            inactiveIcon = video;
+                            activeIcon = resSelect;
+                            inactiveIcon = res;
                             break;
                         case 2:
                             activeIcon = plusSymbol;
@@ -103,8 +109,8 @@ function MyTabBar({ state, descriptors, navigation }) {
                                         colors={[topicTrends[topicTrendsNum].style_desc.gradient_start,
                                         topicTrends[topicTrendsNum].style_desc.gradient_end]}
                                         style={{
-                                            alignItems: "center", justifyContent: "center", borderRadius: 10,
-                                            paddingLeft: 20, paddingRight: 20, paddingTop: 5, paddingBottom: 5,
+                                            alignItems: "center", justifyContent: "center", borderRadius: 7,
+                                            paddingLeft: 15, paddingRight: 15, paddingTop: 2, paddingBottom: 2,
                                         }}
                                     >
                                         <Text style={{ color: '#fff', fontSize: 25 }}>
@@ -200,13 +206,13 @@ export default function App() {
             tabBar={(props) => {
                 return (<MyTabBar {...props} />);
             }}
-            // initialRouteName='account'
+        initialRouteName='mainPage'
         >
 
-            <Tab.Screen name="article" options={{ title: "文章" }} component={ArticleHome} />
-            <Tab.Screen name="video" options={{ title: "视频" }} component={VideoHome} />
+            <Tab.Screen name="mainPage" options={{ title: "主页" }} component={MainPage} />
+            <Tab.Screen name="resourcePool" options={{ title: "源池" }} component={ResourcePool} />
             <Tab.Screen name="create" options={{ title: "+" }} component={createCenter} />
-            <Tab.Screen name="activity" options={{ title: "聊天" }} component={ActivityHome} />
+            <Tab.Screen name="chat" options={{ title: "聊天" }} component={ChatHome} />
             <Tab.Screen name="account" options={{ title: "我的" }} component={AccountHome} />
 
         </Tab.Navigator>

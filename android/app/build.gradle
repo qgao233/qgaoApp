@@ -143,8 +143,8 @@ android {
         applicationId "com.qgao2021"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3       //自己看的
-        versionName "0.1.3"   //用户看的
+        versionCode 4       //自己看的
+        versionName "0.2.0"   //用户看的
     }
     splits {
         abi {

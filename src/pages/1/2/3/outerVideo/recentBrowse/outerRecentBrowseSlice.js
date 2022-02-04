@@ -15,8 +15,9 @@ export const outerRecentBrowseSlice = createSlice({
             {
                 visitedVideoId: 233,
                 visitedEpisodeId: 233,
-                visitedEpisodeName:"name",
+                visitedEpisodeName: "name",
                 visitedTime: undefined,
+                visitedProgress: undefined,
             },
         ]
     },
@@ -28,29 +29,29 @@ export const outerRecentBrowseSlice = createSlice({
         },
         addOuterRecentBrowse: (state, action) => {
             let found = false;
-            state.browseList.forEach((v,i)=>{
-                if(v.visitedVideoId == action.payload.visitedVideoId 
-                    && v.visitedEpisodeId == action.payload.visitedEpisodeId){
-                        found = true;
-                        v.visitedTime = new Date().getTime();
-                    }
+            state.browseList.forEach((v, i) => {
+                if (v.visitedVideoId == action.payload.visitedVideoId
+                    && v.visitedEpisodeId == action.payload.visitedEpisodeId) {
+                    found = true;
+                    v.visitedTime = action.payload.visitedTime;
+                }
             })
-            if(!found){
+            if (!found) {
                 //整个storage只能有8M（可以更改）,单个item只能保存2M，
                 //根据实际计算，约束当前item中数组长度最大为5000
-                if(state.browseList.length > 5000){
-                    state.browseList.splice(0,1);
+                if (state.browseList.length > 5000) {
+                    state.browseList.splice(0, 1);
                 }
                 state.browseList.unshift(action.payload);
 
-            }else{
+            } else {
                 state.browseList.sort((a, b) => b.visitedTime - a.visitedTime);
             }
         },
         deleteOuterRecentBrowse: (state, action) => {
-            if(isEmptyObject(action.payload)){
+            if (isEmptyObject(action.payload)) {
                 state.browseList = [];
-                return ;
+                return;
             }
             let found = false;
             let index = -1;
@@ -65,12 +66,21 @@ export const outerRecentBrowseSlice = createSlice({
                 state.browseList.splice(index, 1);
             }
         },
+        updateOuterRecentBrowse: (state, action) => {
+            state.browseList.forEach((v, i) => {
+                if (v.visitedVideoId == action.payload.visitedVideoId
+                    && v.visitedEpisodeId == action.payload.visitedEpisodeId) {
+                    v.visitedProgress = action.payload.visitedProgress;
+                }
+            })
+        }
     }
 })
 //action creator,若要传入参数,参数是action.payload
 export const { initOuterRecentBrowse,
     addOuterRecentBrowse,
-    deleteOuterRecentBrowse } = outerRecentBrowseSlice.actions
+    deleteOuterRecentBrowse,
+    updateOuterRecentBrowse } = outerRecentBrowseSlice.actions
 //reducer
 export default outerRecentBrowseSlice.reducer
 
@@ -105,7 +115,7 @@ export const initOuterRecentBrowseAsync = () => {
             }
             dispatch(initOuterRecentBrowse(jsonData))
         } catch (err) {
-            console.log("initOuterRecentBrowseAsync",err);
+            console.log("initOuterRecentBrowseAsync", err);
         }
 
     }
@@ -118,7 +128,7 @@ export const addOuterRecentBrowseAsync = (payload) => {
             //await 某个异步操作
             AsyncStorage.setItem(cacheName, JSON.stringify(getState().outerRecentBrowse));
         } catch (err) {
-            console.log("addOuterRecentBrowseAsync",err);
+            console.log("addOuterRecentBrowseAsync", err);
         }
 
     }
@@ -131,7 +141,28 @@ export const deleteOuterRecentBrowseAsync = (payload) => {
             //await 某个异步操作
             AsyncStorage.setItem(cacheName, JSON.stringify(getState().outerRecentBrowse));
         } catch (err) {
-            console.log("deleteOuterRecentBrowseAsync",err);
+            console.log("deleteOuterRecentBrowseAsync", err);
+        }
+
+    }
+}
+
+let updateInterval = null;
+
+export const updateOuterRecentBrowseAsync = (payload) => {
+    return async (dispatch, getState) => {
+        try {
+            dispatch(updateOuterRecentBrowse(payload))
+            //await 某个异步操作
+            if (updateInterval == null) {
+                updateInterval = setInterval(() => {
+                    AsyncStorage.setItem(cacheName, JSON.stringify(getState().outerRecentBrowse));
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }, 60000);//一分钟更新一次sqlLite
+            }
+        } catch (err) {
+            console.log("updateOuterRecentBrowseAsync", err);
         }
 
     }

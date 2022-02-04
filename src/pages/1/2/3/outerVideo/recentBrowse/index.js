@@ -5,7 +5,7 @@ import {
     TouchableHighlight, StyleSheet, ActivityIndicator,
     RefreshControl, StatusBar
 } from 'react-native';
-import { dateDiff, replaceSlash, splitVideoUrl, splitVideoTags } from '../../../../../../utils/funcKits';
+import { dateDiff, replaceSlash, splitVideoUrl, splitVideoTags,videoTimeFormat } from '../../../../../../utils/funcKits';
 import { articleType, screenHeight, screenWidth, statusBarHeight } from '../../../../../../utils/stylesKits';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
@@ -54,10 +54,6 @@ class Index extends React.Component {
     }
 
 
-    //2个问题：1、无法获得遍历后每个元素的measure（解决）
-    //2、无法打开下拉列表（源代码还有问题）(解决)
-
-    //item就是data传进去的，index就是list中每个元素的key属性,rowMap存着每行的ref
     _renderItem = ({ item, index }, rowMap) => {
         // return (<></>);
         return (
@@ -74,6 +70,7 @@ class Index extends React.Component {
                             videoId: item.videoId,
                             currEpisode: item.visitedEpisodeId,
                             from: "recentBrowse",
+                            videoProgress: item.visitedProgress,
                         })
                     }}
                     activeOpacity={0.7}
@@ -113,7 +110,9 @@ class Index extends React.Component {
                             </View>
                         </View>
                         <View>
-                            <Text style={{ fontSize: 14, color: "#5c5c5c" }}>{item.visitedTime} 观看到{item.visitedEpisodeName}</Text>
+                            <Text style={{ fontSize: 14, color: "#5c5c5c", flexWrap: "wrap" }}>
+                                {item.visitedTime} 观看到{item.visitedEpisodeName} ({videoTimeFormat(item.visitedProgress)})
+                            </Text>
                         </View>
                         <View>
                             <Text style={{ fontSize: 10, color: "#878c92" }}>{item.videoTime} 更新到{item.latestEpisode}</Text>
@@ -189,7 +188,7 @@ class Index extends React.Component {
             let promiseItem = getVideoDetail({ ids: this.preData[i].visitedVideoId })
             fetchArray.push(promiseItem)
         }
-        
+
         Promise.all([...fetchArray]).then((dataArray) => {
             let array = [];
             for (let i = (page - 1) * sizePerPage, j = 0; i < totalDataSize && j < sizePerPage; i++, j++) {
@@ -209,6 +208,7 @@ class Index extends React.Component {
                     visitedTime: dateDiff(this.preData[i].visitedTime),
                     visitedEpisodeId: this.preData[i].visitedEpisodeId,
                     visitedEpisodeName: this.preData[i].visitedEpisodeName,
+                    visitedProgress: this.preData[i].visitedProgress,
                 }
                 array.push(obj);
             }
@@ -460,7 +460,7 @@ class Index extends React.Component {
                                 onPress={() => {
                                     this.props.dispatchDeleteOuterRecentBrowseAsync({});
                                     this.setState({ clearModalShow: false })
-                                    this.toastRef.show("清空成功!",1000);
+                                    this.toastRef.show("清空成功!", 1000);
                                 }}
                                 activeOpacity={0.5}
                                 style={{ alignItems: "center" }}>
@@ -491,7 +491,7 @@ class Index extends React.Component {
                         ? this.renderInitLoadIndicator()
                         : this.renderFlatList()
                 }
-                <Toast ref={ref=>{this.toastRef=ref}} style={{ backgroundColor: "#fff", borderRadius: 10, borderWidth: 0.5, borderColor: "#eee6" }} textStyle={{ color: "#000" }} />
+                <Toast ref={ref => { this.toastRef = ref }} style={{ backgroundColor: "#fff", borderRadius: 10, borderWidth: 0.5, borderColor: "#eee6" }} textStyle={{ color: "#000" }} />
 
             </View>
         );

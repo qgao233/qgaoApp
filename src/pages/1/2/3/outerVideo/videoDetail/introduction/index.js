@@ -661,7 +661,7 @@ class Index extends React.Component {
     }
 
     getVideoResource = () => {
-        let { videoId,currEpisode } = this.props.route.params;
+        let { videoId,currEpisode,videoProgress } = this.props.route.params;
         if(!currEpisode) currEpisode = 0;
         // console.log("videoId:", videoId)
         const obj = {
@@ -688,6 +688,7 @@ class Index extends React.Component {
                 videoPoster: replaceSlash(data.list[0].vod_pic),
                 currEpisode: currEpisode,
                 currEpisodeName:tmpStr[currEpisode].split("$")[0],
+                videoProgress: videoProgress,
             }
             this.props.changeEpisode(obj)
 

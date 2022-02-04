@@ -7,7 +7,7 @@ export default (props) => {
         <View style={{ flex: 1,}}>
             <FullPageHeader middleName="分享应用" />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Image style={{ borderRadius: 10 }} source={require("../../../../../../res/img/apk/apk_v0.1.1.png")} />
+                <Image style={{ borderRadius: 10 }} source={require("../../../../../../res/img/apk/appPublish.png")} />
             </View>
         </View>
 

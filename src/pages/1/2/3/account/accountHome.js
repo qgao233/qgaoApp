@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StatusBar, NativeModules, TouchableOpacity, Image, Animated, Vibration } from 'react-native';
+import {
+    View, Text, StatusBar, NativeModules, TouchableOpacity,
+    Image, Animated, Vibration
+} from 'react-native';
 import { ImageHeaderScrollView, TriggeringView } from 'react-native-image-header-scroll-view';
 import { screenHeight, screenWidth, statusBarHeight } from '../../../../../utils/stylesKits';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
@@ -15,6 +18,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useTopicTrends } from '../utils/hooks';
 import { useSelector } from 'react-redux';
 import { selectLoginStatus } from '../utils/slice/loginStatusSlice'
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const imgHeight = screenWidth * 9 / 16;
 
@@ -104,9 +110,23 @@ export default (props) => {
     const [videoMuted, setVideoMuted] = useState(true);
 
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            StatusBar.setBarStyle("dark-content");
+            StatusBar.setBackgroundColor("transparent");
+            StatusBar.setTranslucent(true);
+            StatusBar.setHidden(false);
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
     return (
-        <View style={{ flex: 1 }}>
-            <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} hidden={false} />
+        <SafeAreaView
+            edges={['left', 'right']}
+            style={{ flex: 1 }}
+        >
+            <StatusBar backgroundColor="transparent" barStyle="dark-content" translucent={true} hidden={false} />
             <ImageHeaderScrollView
                 // overScrollMode='always'
                 onScroll={
@@ -533,6 +553,6 @@ export default (props) => {
                 </View>
 
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 }
