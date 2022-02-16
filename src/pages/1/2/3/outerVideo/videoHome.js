@@ -10,7 +10,7 @@ import Modalbox from 'react-native-modalbox';
 import { screenWidth } from '../../../../../utils/stylesKits';
 import { createSelector } from '@reduxjs/toolkit';
 import { connect } from 'react-redux';
-import { initOuterRecentBrowseAsync } from './recentBrowse/outerRecentBrowseSlice'
+import { initOuterRecentBrowseAsync } from './utils/slice/outerRecentBrowseSlice'
 import Feather from 'react-native-vector-icons/Feather'
 import SearchBox from '../../../../../utils/components/inputBox'
 

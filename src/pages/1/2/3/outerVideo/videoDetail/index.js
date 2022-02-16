@@ -10,7 +10,7 @@ import { dateDiff, replaceSlash, splitVideoUrl, splitVideoTags } from '../../../
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 import { useTopicTrends } from '../../utils/hooks';
-import { addOuterRecentBrowseAsync, updateOuterRecentBrowseAsync } from '../recentBrowse/outerRecentBrowseSlice'
+import { addOuterRecentBrowseAsync, updateOuterRecentBrowseAsync } from '../utils/slice/outerRecentBrowseSlice'
 
 function TabBar(props) {
     const { goToPage, tabs, activeTab } = props;

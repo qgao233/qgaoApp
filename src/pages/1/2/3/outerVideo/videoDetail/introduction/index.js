@@ -233,7 +233,7 @@ class Index extends React.Component {
             for (let i = (page - 1) * sizePerPage, j = 0; i < totalDataSize && j < sizePerPage; i++, j++) {
                 let type = i % 4 == 0 ? "原" : i % 4 == 1 ? "转" : i % 4 == 2 ? "翻" : "志";
                 let obj = {
-                    key: i+"#"+Math.random()*new Date().getTime(),
+                    key: i,
                     photoPath: require("../../../../../../../res/img/photo.jpg"),
                     nickName: "qgao",
                     publishTime: 1630584687000,//时间戳形式,ms
@@ -434,12 +434,12 @@ class Index extends React.Component {
                             videoTags.length != 0
                                 ? videoTags.map((v, i) => {
                                     if (i == 0) {
-                                        return <View key={i + "#" + Math.random() * new Date().getTime()} style={{ marginLeft: 5, paddingLeft: 2, paddingRight: 2, paddingTop: 1, paddingBottom: 1, justifyContent: "center", backgroundColor: "#ffd5d3", borderRadius: 5 }}>
+                                        return <View key={i} style={{ marginLeft: 5, paddingLeft: 2, paddingRight: 2, paddingTop: 1, paddingBottom: 1, justifyContent: "center", backgroundColor: "#ffd5d3", borderRadius: 5 }}>
                                             <Text style={{ color: "#ec1a0a", fontSize: 10 }}>{v}</Text>
                                         </View>
                                     }
 
-                                    else return <View key={i + "#" + Math.random() * new Date().getTime()} style={{ marginLeft: 5, paddingLeft: 2, paddingRight: 2, paddingTop: 1, paddingBottom: 1, justifyContent: "center", backgroundColor: "#eee", borderRadius: 5 }}>
+                                    else return <View key={i} style={{ marginLeft: 5, paddingLeft: 2, paddingRight: 2, paddingTop: 1, paddingBottom: 1, justifyContent: "center", backgroundColor: "#eee", borderRadius: 5 }}>
                                         <Text style={{ color: "#aaa", fontSize: 10 }}>{v}</Text>
                                     </View>
                                 })
@@ -470,10 +470,9 @@ class Index extends React.Component {
                             >
                                 {
                                     videoEpisodes.map((v, i) => {
-                                        if (i > 6) return <></>
-                                        else return <TouchableOpacity
+                                        return <TouchableOpacity
                                             activeOpacity={0.6}
-                                            key={i + "#" + Math.random() * new Date().getTime()}
+                                            key={i}
                                             onPress={() => {
                                                 let obj = {
                                                     videoSource: v.split("$")[1],
@@ -617,7 +616,7 @@ class Index extends React.Component {
         return (
         <TouchableOpacity
             activeOpacity={0.6}
-            key={index + "#" + Math.random() * new Date().getTime()}
+            key={index}
             onPress={() => {
                 let obj = {
                     videoSource: item.split("$")[1],

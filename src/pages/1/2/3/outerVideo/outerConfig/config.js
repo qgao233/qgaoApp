@@ -1,7 +1,16 @@
+import {unicode2Cn} from '../../../../../../utils/funcKits'
+
+
 //列表地址
-export const outerLinkList = "https://api.apibdzy.com/api.php/provide/vod/?ac=list";
+let outerLinkList = "https://api.apibdzy.com/api.php/provide/vod/?ac=list";
 //详细信息地址
-export const outerLinkDetail = "https://api.apibdzy.com/api.php/provide/vod/?ac=detail";
+let outerLinkDetail = "https://api.apibdzy.com/api.php/provide/vod/?ac=detail";
+
+export const initOuterLink = (jsonData)=>{
+    const {list,detail} = jsonData;
+    outerLinkList = list;
+    outerLinkDetail = detail;
+}
 
 //获得视频分类
 export const getVideoTypes = () => {
@@ -59,7 +68,7 @@ export const getVideoDetail = (obj) => {
 }
 
 
-const handleResponse = (response) => {
+export const handleResponse = (response) => {
     let contentType = response.headers.get('content-type')
     if (contentType.includes('application/json') || contentType.includes('text/html')) {
         return handleJSONResponse(response)
@@ -76,7 +85,8 @@ const handleResponse = (response) => {
 const handleJSONResponse = (response) => {
     return response.json().then(json => {
             if (response.ok) {
-                return json
+                
+                return JSON.parse( unicode2Cn(JSON.stringify(json)))
             } else {
                 return Promise.reject(Object.assign({}, json, {
                     status: response.status,
@@ -89,7 +99,7 @@ const handleTextResponse = (response) => {
     return response.text()
         .then(text => {
             if (response.ok) {
-                return text
+                return unicode2Cn(text)
             } else {
                 return Promise.reject({
                     status: response.status,

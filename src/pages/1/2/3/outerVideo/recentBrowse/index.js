@@ -22,7 +22,7 @@ import FullPageHeader from '../../../../../../utils/components/fullPageHeader';
 import Modal from 'react-native-modal'
 import Toast, { DURATION } from 'react-native-easy-toast'
 
-import { deleteOuterRecentBrowseAsync } from '../recentBrowse/outerRecentBrowseSlice'
+import { deleteOuterRecentBrowseAsync } from '../utils/slice/outerRecentBrowseSlice'
 
 const spinnerTextArray = ["关注", "私聊", "拉黑", "举报"];
 

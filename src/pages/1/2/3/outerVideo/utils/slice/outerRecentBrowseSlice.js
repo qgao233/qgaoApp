@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUniqueId } from 'react-native-device-info';
-import { isEmptyObject } from '../../../../../../utils/funcKits';
+import { isEmptyObject } from '../../../../../../../utils/funcKits';
 
 //createSlice负责生成:
 //1. action 类型字符串    action.type      {name}/{reducers.key}

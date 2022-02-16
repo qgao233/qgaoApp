@@ -78,7 +78,13 @@ class Index extends React.Component {
               height: screenWidth / 2.2 * 16 / 9,
               resizeMode: 'stretch',
               borderTopLeftRadius:10,borderTopRightRadius:10,
-            }} source={{uri:replaceSlash(item.vod_pic)}} />
+            }} 
+            source={
+              item.vod_pic != null || item.vod_pic != undefined 
+              ? {uri:replaceSlash(item.vod_pic)}
+              : require("../../../../../../res/img/photo.jpg")
+            } 
+            />
             <View style={{ position: "absolute", bottom: 0, left: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-around" }}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <FontAwesomeIcon name="play-circle-o" size={styles.widget.fontSize} color={styles.widget.color} />

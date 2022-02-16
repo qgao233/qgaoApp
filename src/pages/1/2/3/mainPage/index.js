@@ -26,7 +26,7 @@ const msPerChar = 500;
 
 const onLayout = (e, index) => {
     let { width } = e.nativeEvent.layout;
-    console.log(index, width, screenWidth)
+    // console.log(index, width, screenWidth)
 }
 
 const preSlidePics = [
