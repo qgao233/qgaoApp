@@ -1,4 +1,4 @@
 {
-    "list":"https://api.ukuapi.com/api.php/provide/vod/?ac=list",
-    "detail":"https://api.ukuapi.com/api.php/provide/vod/?ac=detail"
+    "list":"https://api.apibdzy.com/api.php/provide/vod/?ac=list",
+    "detail":"https://api.apibdzy.com/api.php/provide/vod/?ac=detail"
 }
